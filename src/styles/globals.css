@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.section{ @apply py-16 md:py-24; }
+.container{ @apply max-w-6xl mx-auto px-4; }
+.text-muted-foreground{ color: rgba(0,0,0,.6) }
+@media (prefers-color-scheme: dark){ .text-muted-foreground{ color: rgba(255,255,255,.7) } }
+
+/* Accessible Skip Link */
+.skip-to-content:not(:focus) {
+  position: absolute;
+  left: -9999px;
+}
+.skip-to-content:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  padding: 0.5rem 1rem;
+  background: white;
+  color: black;
+  border-radius: 0.5rem;
+  z-index: 10000;
+}
