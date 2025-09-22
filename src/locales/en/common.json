@@ -1,84 +1,84 @@
 {
+  "site": {
+    "title": "TacTec - Revolutionizing Football Club Management",
+    "description": "One platform for complete football club control. Manage tactics, training, health, communication, and operations seamlessly."
+  },
   "nav": {
-    "club_os": "Club OS",
-    "challenge": "Challenge",
-    "solution": "Solution",
+    "home": "Home",
     "features": "Features",
-    "tech": "Technology",
-    "pricing": "Pricing",
-    "contact": "Contact",
-    "signin": "Sign In"
+    "about": "About",
+    "contact": "Contact"
   },
   "hero": {
-    "trusted": "Trusted by clubs and staff",
-    "title": "Revolutionising",
-    "title_highlight": "Football Club Management",
-    "subtitle": "TACTEC unifies sports science, medical, tactical and operations into one clean platform for every department.",
-    "cta": {
-      "start": "Get Started",
-      "demo": "Request Demo"
-    },
-    "stats": {
-      "injury": "Lower soft-tissue injuries",
-      "sync": "Faster data sync"
-    }
-  },
-  "challenge": {
-    "eyebrow": "The Challenge",
-    "title": "Fragmented football operations slow clubs down",
-    "subtitle": "Data is scattered. Workflows are manual. Insights arrive late.",
-    "items": {
-      "staff": {
-        "title": "Staff Alignment",
-        "desc": "Medical, coaching and analysis teams work in silos with duplicate effort."
-      },
-      "workflows": {
-        "title": "Manual Workflows",
-        "desc": "Reporting, planning and communication are spread across tools and spreadsheets."
-      },
-      "insights": {
-        "title": "Slow Insights",
-        "desc": "Decisions rely on delayed or incomplete information."
-      }
-    }
-  },
-  "solution": {
-    "eyebrow": "The Solution",
-    "title": "One operating system for your club",
-    "subtitle": "Bring people, processes and performance together with TACTEC."
+    "headline": "One Platform, Total Football Club Control",
+    "subtext": "Revolutionize your club’s management with TacTec’s all-in-one solution.",
+    "ctaDemo": "Schedule Demo",
+    "ctaLearn": "Learn More"
   },
   "features": {
-    "eyebrow": "Core Features",
-    "title": "Everything your staff needs",
-    "subtitle": "Team management, tactical boards, wellness & medical, reporting and more."
-  },
-  "tech": {
-    "eyebrow": "Technology",
-    "title": "Clean architecture. Cross‑platform. Fast.",
-    "subtitle": "Modern stack, universal design and a powerful graphics engine."
-  },
-  "cta": {
-    "eyebrow": "Next Step",
-    "title": "See TACTEC in action",
-    "subtitle": "Request a live demo or try the player app.",
-    "buttons": {
-      "demo": "Request Live Demo",
-      "app": "Try Player App"
+    "advancedReporting": {
+      "title": "Advanced Reporting Systems",
+      "medical": "Medical Reports",
+      "medicalDesc": "Comprehensive player health documentation and trend analysis for informed medical decisions.",
+      "training": "Training Reports",
+      "trainingDesc": "Daily training logs, match analyses, and detailed performance assessments for continuous improvement.",
+      "dashboards": "Customisable Dashboards",
+      "dashboardsDesc": "Clear overview of key metrics facilitating data-driven strategic decision-making."
+    },
+    "communication": {
+      "title": "Integrated Communication System",
+      "coaching": "Coaching Staff",
+      "coachingDesc": "Share tactics, drills, and feedback.",
+      "medical": "Medical Team",
+      "medicalDesc": "Report injuries and recovery status.",
+      "management": "Management",
+      "managementDesc": "Approve resources and operational updates.",
+      "players": "Players",
+      "playersDesc": "Receive plans and send availability."
+    },
+    "technical": {
+      "title": "Technical Excellence: Universal Clean Architecture",
+      "debug": "Faster Debugging",
+      "debugDesc": "4-layer universal pattern accelerates problem resolution across all platforms.",
+      "time": "Reduced Time-to-Market",
+      "timeDesc": "Highly reusable patterns streamline development and deployment processes.",
+      "redundancy": "Zero Code Redundancy",
+      "redundancyDesc": "No duplication across roles or platforms ensures maintainability."
+    },
+    "graphics": {
+      "title": "Revolutionary Graphics Engine",
+      "sub": "React Native Skia Integration",
+      "desc": "High-performance 2D graphics engine delivering desktop-class functionality with smooth 60fps rendering.",
+      "multiTouch": "Multi-touch gesture-based drawing",
+      "path": "Path optimisation for smooth interactions",
+      "response": "Sub-100ms gesture response times"
     }
   },
-  "footer": {
-    "about": "TACTEC by Ventio. Built for professional and academy clubs.",
-    "product": "Product: TACTEC",
-    "company": "Company: Ventio",
-    "rights": "© Ventio. All rights reserved.",
-    "made": "Made with care for football."
+  "gettingStarted": {
+    "title": "Getting Started",
+    "discovery": "Discovery Call",
+    "discoveryDesc": "Brief consultation to understand your club's challenges and requirements.",
+    "deployment": "Same-Day Deployment",
+    "deploymentDesc": "Swift implementation with minimal disruption.",
+    "training": "Comprehensive Training",
+    "trainingDesc": "Role-specific onboarding for maximum adoption.",
+    "support": "Ongoing Support",
+    "supportDesc": "Dedicated assistance to optimize your TacTec experience."
   },
-  "faq": {
-    "q1": "What is TACTEC?",
-    "a1": "TACTEC is a unified operating system for football clubs covering medical, tactical, performance and operations.",
-    "q2": "Is TACTEC multi‑language?",
-    "a2": "Yes. The interface supports Arabic, Portuguese (EU), Brazilian Portuguese, Spanish, French, Italian, German and English.",
-    "q3": "How do we start?",
-    "a3": "Contact us for a live demo and onboarding plan."
+  "footer": {
+    "clubInHand": "Your Club in your Hand",
+    "achieve": "Achieve Decisive Competitive Advantage",
+    "achieveDesc": "Leverage cutting-edge technology to outperform rivals and secure more wins.",
+    "transform": "Transform Coaching Strategies",
+    "transformDesc": "Modernize your approach with data-driven insights and innovative tools.",
+    "empower": "Empower Your Staff",
+    "empowerDesc": "Equip your team with intuitive solutions that boost productivity.",
+    "unlock": "Unlock Full Team Potential",
+    "unlockDesc": "Maximize every player's performance and foster cohesive team dynamics."
+  },
+  "misc": {
+    "thankYou": "Thank You",
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again."
   }
 }
