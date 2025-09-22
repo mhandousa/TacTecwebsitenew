@@ -11,10 +11,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   const messages = useMemo(() => {
     try {
-      // ✅ src/locales/*
-      return require(`./locales/${locale}/common.json`);
+      // ✅ go UP one folder (pages → src) then into locales
+      return require(`../locales/${locale}/common.json`);
     } catch {
-      return require("./locales/en/common.json");
+      return require("../locales/en/common.json");
     }
   }, [locale]);
 
