@@ -9,12 +9,12 @@ import { GA_TRACKING_ID, pageview } from "@/utils/analytics";
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { locale = "en", events } = useRouter();
 
-  // Load translations from src/locales/{locale}/common.json
   const messages = useMemo(() => {
     try {
-      return require(`../locales/${locale}/common.json`);
+      // ✅ src/locales/*
+      return require(`./locales/${locale}/common.json`);
     } catch {
-      return require("../locales/en/common.json"); // fallback
+      return require("./locales/en/common.json");
     }
   }, [locale]);
 
