@@ -1,0 +1,55 @@
+# ============================================
+# TACTEC Website Environment Variables
+# ============================================
+
+# --------------------------------------------
+# Google Analytics 4
+# --------------------------------------------
+# Get this from your GA4 property settings
+# Format: G-XXXXXXXXXX
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+
+# --------------------------------------------
+# Site Configuration
+# --------------------------------------------
+# Site URL (used for canonical URLs and OG tags)
+# Production URL
+NEXT_PUBLIC_SITE_URL=https://tactec.club
+
+# Development - uncomment for local development
+# NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# --------------------------------------------
+# Error Reporting (Sentry)
+# --------------------------------------------
+# Sentry DSN for error tracking
+# Get this from your Sentry project settings
+# Format: https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
+# Leave empty to disable Sentry error reporting
+NEXT_PUBLIC_SENTRY_DSN=
+
+# Optional: Sentry environment name
+# NEXT_PUBLIC_SENTRY_ENVIRONMENT=production
+
+# Optional: Sentry release version
+# NEXT_PUBLIC_SENTRY_RELEASE=1.0.0
+
+# --------------------------------------------
+# Custom Error Endpoint (Alternative to Sentry)
+# --------------------------------------------
+# Custom endpoint to send error reports to
+# Only used if you want a custom error reporting solution
+# Leave empty if using Sentry or no error reporting
+NEXT_PUBLIC_ERROR_ENDPOINT=
+
+# Example: https://api.tactec.club/errors
+# NEXT_PUBLIC_ERROR_ENDPOINT=https://api.tactec.club/errors
+
+# --------------------------------------------
+# Development/Testing
+# --------------------------------------------
+# Set to 'true' to enable verbose logging
+# DEBUG=false
+
+# Set to 'true' to test error reporting
+# TEST_ERROR_REPORTING=false
