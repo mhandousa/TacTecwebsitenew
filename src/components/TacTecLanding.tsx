@@ -119,7 +119,7 @@ export default function TacTecLanding() {
             <p className="mt-6 text-lg md:text-xl max-w-3xl mx-auto">{t("hero.subtitle")}</p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link href="#demo" legacyBehavior>
-                
+                <a
                   onClick={() => trackEvent(ANALYTICS_EVENTS.CTA_START)}
                   className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg font-semibold transition"
                 >
@@ -127,7 +127,7 @@ export default function TacTecLanding() {
                 </a>
               </Link>
               <Link href="#demo" legacyBehavior>
-                
+                <a
                   onClick={() => trackEvent(ANALYTICS_EVENTS.CTA_DEMO)}
                   className="border border-sky-500 hover:bg-sky-500 hover:text-white text-sky-500 px-6 py-3 rounded-lg font-semibold transition"
                 >
