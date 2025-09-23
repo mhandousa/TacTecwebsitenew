@@ -44,6 +44,16 @@ const isSentryAvailable = (): boolean => {
 };
 
 /**
+ * Get Sentry instance
+ */
+const getSentry = () => {
+  if (isSentryAvailable()) {
+    return (window as any).Sentry;
+  }
+  return null;
+};
+
+/**
  * Initialize error reporting
  * This should be called once when the app starts
  */
@@ -52,19 +62,13 @@ export const initErrorReporting = (): void => {
 
   const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
   
-  // Only initialize if DSN is provided
-  if (!SENTRY_DSN) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Error Reporting] No Sentry DSN provided. Error reporting disabled.');
-    }
-    return;
-  }
-
-  // Sentry initialization would go here
-  // For now, we'll use a custom implementation
-  
+  // Log initialization status
   if (process.env.NODE_ENV === 'development') {
-    console.log('[Error Reporting] Initialized with DSN:', SENTRY_DSN);
+    if (SENTRY_DSN) {
+      console.log('[Error Reporting] Sentry DSN configured, will initialize when script loads');
+    } else {
+      console.log('[Error Reporting] No Sentry DSN provided. Error reporting limited to console and analytics.');
+    }
   }
 
   // Set up global error handlers
@@ -74,6 +78,9 @@ export const initErrorReporting = (): void => {
       context: {
         component: 'GlobalErrorHandler',
         url: window.location.href,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
       },
     });
   });
@@ -125,19 +132,34 @@ export const captureError = (
   }
 
   // Send to Sentry if available
-  if (isSentryAvailable()) {
-    const Sentry = (window as any).Sentry;
-    Sentry.captureException(error, {
-      level: severity,
-      contexts: {
-        custom: context,
-      },
+  const Sentry = getSentry();
+  if (Sentry) {
+    Sentry.withScope((scope: any) => {
+      // Set severity level
+      scope.setLevel(severity);
+      
+      // Set context
+      if (context.component) {
+        scope.setTag('component', context.component);
+      }
+      if (context.action) {
+        scope.setTag('action', context.action);
+      }
+      if (context.locale) {
+        scope.setTag('locale', context.locale);
+      }
+      
+      // Set additional context
+      scope.setContext('errorDetails', context);
+      
+      // Capture the exception
+      Sentry.captureException(error);
     });
   }
 
   // Track in Google Analytics
   trackEvent('error_occurred', {
-    error_message: error.message,
+    error_message: error.message.substring(0, 150), // Limit length
     error_severity: severity,
     error_component: context.component,
     error_action: context.action,
@@ -165,20 +187,19 @@ export const captureMessage = (
     console.log(`[${severity.toUpperCase()}]`, message, messageContext);
   }
 
-  if (isSentryAvailable()) {
-    const Sentry = (window as any).Sentry;
-    Sentry.captureMessage(message, {
-      level: severity,
-      contexts: {
-        custom: messageContext,
-      },
+  const Sentry = getSentry();
+  if (Sentry) {
+    Sentry.withScope((scope: any) => {
+      scope.setLevel(severity);
+      scope.setContext('messageDetails', messageContext);
+      Sentry.captureMessage(message);
     });
   }
 
   // Track in Analytics for warnings and errors
   if (severity === ErrorSeverity.Error || severity === ErrorSeverity.Warning) {
     trackEvent('message_logged', {
-      message,
+      message: message.substring(0, 150),
       severity,
       component: context?.component,
     });
@@ -194,8 +215,8 @@ export const setUserContext = (user: {
   username?: string;
   [key: string]: any;
 }): void => {
-  if (isSentryAvailable()) {
-    const Sentry = (window as any).Sentry;
+  const Sentry = getSentry();
+  if (Sentry) {
     Sentry.setUser(user);
   }
 
@@ -208,13 +229,38 @@ export const setUserContext = (user: {
  * Set custom context tags
  */
 export const setErrorContext = (context: Record<string, any>): void => {
-  if (isSentryAvailable()) {
-    const Sentry = (window as any).Sentry;
+  const Sentry = getSentry();
+  if (Sentry) {
     Sentry.setContext('custom', context);
   }
 
   if (process.env.NODE_ENV === 'development') {
     console.log('[Error Reporting] Context set:', context);
+  }
+};
+
+/**
+ * Add breadcrumb for debugging
+ */
+export const addBreadcrumb = (
+  message: string,
+  category: string = 'custom',
+  level: 'fatal' | 'error' | 'warning' | 'info' | 'debug' = 'info',
+  data?: Record<string, any>
+): void => {
+  const Sentry = getSentry();
+  if (Sentry) {
+    Sentry.addBreadcrumb({
+      message,
+      category,
+      level,
+      data,
+      timestamp: Date.now() / 1000,
+    });
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Breadcrumb] ${category}: ${message}`, data);
   }
 };
 
@@ -233,19 +279,25 @@ const sendToErrorEndpoint = async (errorReport: ErrorReport): Promise<void> => {
   }
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
     await fetch(ERROR_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(errorReport),
-      // Don't wait for response, fire and forget
+      signal: controller.signal,
       keepalive: true,
-    }).catch(() => {
-      // Silently fail - we don't want error reporting to cause more errors
     });
-  } catch {
-    // Silently fail
+
+    clearTimeout(timeoutId);
+  } catch (error) {
+    // Silently fail - we don't want error reporting to cause more errors
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[Error Reporting] Failed to send to custom endpoint:', error);
+    }
   }
 };
 
@@ -259,6 +311,7 @@ export const createErrorBoundaryHandler = (componentName: string) => {
       context: {
         component: componentName,
         componentStack: errorInfo.componentStack,
+        errorBoundary: true,
       },
     });
   };
@@ -301,6 +354,10 @@ export const testErrorReporting = (): void => {
 
   console.log('Testing error reporting...');
 
+  // Test Sentry availability
+  const Sentry = getSentry();
+  console.log('Sentry available:', !!Sentry);
+
   // Test error capture
   captureError(new Error('Test error from error reporting'), {
     severity: ErrorSeverity.Error,
@@ -315,5 +372,13 @@ export const testErrorReporting = (): void => {
     component: 'ErrorReportingTest',
   });
 
+  // Test breadcrumb
+  addBreadcrumb('Test breadcrumb', 'test', 'info', { testData: true });
+
   console.log('Error reporting test complete. Check console and monitoring tools.');
 };
+
+// Expose test function globally in development
+if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+  (window as any).testErrorReporting = testErrorReporting;
+}
