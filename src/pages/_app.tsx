@@ -11,7 +11,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   const messages = useMemo(() => {
     try {
-      // ✅ go UP one folder (pages → src) then into locales
+      // ✅ Fixed: Now uses src/locales/ to match index.tsx
       return require(`../locales/${locale}/common.json`);
     } catch {
       return require("../locales/en/common.json");
