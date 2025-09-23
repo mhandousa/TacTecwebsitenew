@@ -15,70 +15,70 @@
     "title_highlight": "la Gestione dei Club Calcistici",
     "subtitle": "TACTEC unifica scienza dello sport, medicina, tattica e operazioni in un'unica piattaforma chiara per ogni dipartimento.",
     "cta": {
-      "start": "Comenzar",
-      "demo": "Solicitar Demostración"
+      "start": "Inizia",
+      "demo": "Richiedi Demo"
     },
     "stats": {
-      "injury": "Menos lesiones musculares",
-      "sync": "Sincronización de datos más rápida"
+      "injury": "Meno lesioni dei tessuti molli",
+      "sync": "Sincronizzazione dati più rapida"
     }
   },
   "challenge": {
-    "eyebrow": "El Desafío",
-    "title": "Las operaciones fragmentadas ralentizan a los clubes",
-    "subtitle": "Los datos están dispersos. Los flujos de trabajo son manuales. La información llega tarde.",
+    "eyebrow": "La Sfida",
+    "title": "Le operazioni calcistiche frammentate rallentano i club",
+    "subtitle": "I dati sono dispersi. I flussi di lavoro sono manuali. Le informazioni arrivano in ritardo.",
     "items": {
       "staff": {
-        "title": "Alineación del Personal",
-        "desc": "Los equipos médicos, técnicos y de análisis trabajan en silos con esfuerzos duplicados."
+        "title": "Allineamento del Personale",
+        "desc": "I team medici, di coaching e di analisi lavorano in silos con sforzi duplicati."
       },
       "workflows": {
-        "title": "Flujos de Trabajo Manuales",
-        "desc": "Informes, planificación y comunicación repartidos en varias herramientas y hojas de cálculo."
+        "title": "Flussi di Lavoro Manuali",
+        "desc": "Rapporti, pianificazione e comunicazione sono distribuiti su vari strumenti e fogli di calcolo."
       },
       "insights": {
-        "title": "Información Lenta",
-        "desc": "Las decisiones dependen de datos retrasados o incompletos."
+        "title": "Informazioni Lente",
+        "desc": "Le decisioni si basano su informazioni ritardate o incomplete."
       }
     }
   },
   "solution": {
-    "eyebrow": "La Solución",
-    "title": "Un sistema operativo para su club",
-    "subtitle": "Una personas, procesos y rendimiento con TACTEC."
+    "eyebrow": "La Soluzione",
+    "title": "Un sistema operativo per il tuo club",
+    "subtitle": "Unisci persone, processi e prestazioni con TACTEC."
   },
   "features": {
-    "eyebrow": "Características Principales",
-    "title": "Todo lo que su personal necesita",
-    "subtitle": "Gestión del equipo, pizarras tácticas, bienestar y área médica, informes y más."
+    "eyebrow": "Funzionalità Principali",
+    "title": "Tutto ciò di cui il tuo personale ha bisogno",
+    "subtitle": "Gestione squadra, lavagne tattiche, benessere e area medica, reportistica e altro."
   },
   "tech": {
-    "eyebrow": "Tecnología",
-    "title": "Arquitectura limpia. Multiplataforma. Rápida.",
-    "subtitle": "Tecnología moderna, diseño universal y un potente motor gráfico."
+    "eyebrow": "Tecnologia",
+    "title": "Architettura pulita. Multi-piattaforma. Veloce.",
+    "subtitle": "Stack moderno, design universale e un potente motore grafico."
   },
   "cta": {
-    "eyebrow": "Próximo Paso",
-    "title": "Vea TACTEC en acción",
-    "subtitle": "Solicite una demostración en vivo o pruebe la aplicación para jugadores.",
+    "eyebrow": "Prossimo Passo",
+    "title": "Vedi TACTEC in azione",
+    "subtitle": "Richiedi una demo dal vivo o prova l'app per giocatori.",
     "buttons": {
-      "demo": "Solicitar Demostración en Vivo",
-      "app": "Probar la App del Jugador"
+      "demo": "Richiedi Demo dal Vivo",
+      "app": "Prova l'App del Giocatore"
     }
   },
   "footer": {
-    "about": "TACTEC by Ventio. Creado para clubes profesionales y academias.",
-    "product": "Producto: TACTEC",
-    "company": "Empresa: Ventio",
-    "rights": "© Ventio. Todos los derechos reservados.",
-    "made": "Hecho con dedicación al fútbol."
+    "about": "TACTEC di Ventio. Creato per club professionistici e accademie.",
+    "product": "Prodotto: TACTEC",
+    "company": "Azienda: Ventio",
+    "rights": "© Ventio. Tutti i diritti riservati.",
+    "made": "Realizzato con cura per il calcio."
   },
   "faq": {
-    "q1": "¿Qué es TACTEC?",
-    "a1": "TACTEC es un sistema operativo unificado para clubes de fútbol que cubre el área médica, táctica, de rendimiento y operaciones.",
-    "q2": "¿TACTEC es multilingüe?",
-    "a2": "Sí. La interfaz admite árabe, portugués (UE), portugués brasileño, español, francés, italiano, alemán e inglés.",
-    "q3": "¿Cómo empezar?",
-    "a3": "Contáctenos para una demostración en vivo y un plan de incorporación."
+    "q1": "Cos'è TACTEC?",
+    "a1": "TACTEC è un sistema operativo unificato per club calcistici che copre area medica, tattica, prestazioni e operazioni.",
+    "q2": "TACTEC è multilingue?",
+    "a2": "Sì. L'interfaccia supporta arabo, portoghese (UE), portoghese brasiliano, spagnolo, francese, italiano, tedesco e inglese.",
+    "q3": "Come iniziare?",
+    "a3": "Contattaci per una demo dal vivo e un piano di onboarding."
   }
 }
