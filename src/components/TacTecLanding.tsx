@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
-import { pageview, ANALYTICS_EVENTS } from "@/utils/analytics";
+import { useEffect } from "react";
+import { trackEvent, trackExternalLink, initScrollTracking, ANALYTICS_EVENTS } from "@/utils/analytics";
 import { SITE_URL } from "@/config/env";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -14,6 +15,12 @@ export default function TacTecLanding() {
   
   const siteUrl = SITE_URL;
   const ogImage = `${siteUrl}/images/1_TacTec-Revolutionising-Football-Club-Management.webp`;
+
+  // Initialize scroll tracking on mount
+  useEffect(() => {
+    const cleanup = initScrollTracking();
+    return cleanup;
+  }, []);
 
   return (
     <>
@@ -63,10 +70,34 @@ export default function TacTecLanding() {
           <div className="text-2xl font-bold text-sky-600">TACTEC</div>
           <div className="flex items-center gap-6">
             <div className="hidden md:flex gap-6">
-              <a href="#challenge" className="hover:text-sky-600 transition">{t("nav.challenge")}</a>
-              <a href="#solution" className="hover:text-sky-600 transition">{t("nav.solution")}</a>
-              <a href="#features" className="hover:text-sky-600 transition">{t("nav.features")}</a>
-              <a href="#tech" className="hover:text-sky-600 transition">{t("nav.tech")}</a>
+              <a 
+                href="#challenge" 
+                className="hover:text-sky-600 transition"
+                onClick={() => trackEvent(ANALYTICS_EVENTS.NAV_CHALLENGE)}
+              >
+                {t("nav.challenge")}
+              </a>
+              <a 
+                href="#solution" 
+                className="hover:text-sky-600 transition"
+                onClick={() => trackEvent(ANALYTICS_EVENTS.NAV_SOLUTION)}
+              >
+                {t("nav.solution")}
+              </a>
+              <a 
+                href="#features" 
+                className="hover:text-sky-600 transition"
+                onClick={() => trackEvent(ANALYTICS_EVENTS.NAV_FEATURES)}
+              >
+                {t("nav.features")}
+              </a>
+              <a 
+                href="#tech" 
+                className="hover:text-sky-600 transition"
+                onClick={() => trackEvent(ANALYTICS_EVENTS.NAV_TECH)}
+              >
+                {t("nav.tech")}
+              </a>
             </div>
             <LanguageSwitcher />
           </div>
@@ -86,7 +117,7 @@ export default function TacTecLanding() {
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link href="#demo" legacyBehavior>
                 <a
-                  onClick={() => pageview(ANALYTICS_EVENTS.CTA_START)}
+                  onClick={() => trackEvent(ANALYTICS_EVENTS.CTA_START)}
                   className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg font-semibold transition"
                 >
                   {t("hero.cta.start")}
@@ -94,7 +125,7 @@ export default function TacTecLanding() {
               </Link>
               <Link href="#demo" legacyBehavior>
                 <a
-                  onClick={() => pageview(ANALYTICS_EVENTS.CTA_DEMO)}
+                  onClick={() => trackEvent(ANALYTICS_EVENTS.CTA_DEMO)}
                   className="border border-sky-500 hover:bg-sky-500 hover:text-white text-sky-500 px-6 py-3 rounded-lg font-semibold transition"
                 >
                   {t("hero.cta.demo")}
@@ -267,13 +298,13 @@ export default function TacTecLanding() {
             <p className="mt-4 text-lg text-sky-100 max-w-2xl mx-auto">{t("cta.subtitle")}</p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <button
-                onClick={() => pageview(ANALYTICS_EVENTS.CTA_DEMO_BOTTOM)}
+                onClick={() => trackEvent(ANALYTICS_EVENTS.CTA_DEMO_BOTTOM)}
                 className="bg-white text-sky-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition"
               >
                 {t("cta.buttons.demo")}
               </button>
               <button
-                onClick={() => pageview(ANALYTICS_EVENTS.CTA_APP_BOTTOM)}
+                onClick={() => trackEvent(ANALYTICS_EVENTS.CTA_APP_BOTTOM)}
                 className="border-2 border-white hover:bg-white hover:text-sky-600 px-8 py-3 rounded-lg font-semibold transition"
               >
                 {t("cta.buttons.app")}
@@ -301,7 +332,17 @@ export default function TacTecLanding() {
               <div>
                 <h4 className="text-white font-semibold mb-3">{t("footer.company")}</h4>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="https://ventio.com" className="hover:text-white transition">About Ventio</a></li>
+                  <li>
+                    <a 
+                      href="https://ventio.com" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackExternalLink('https://ventio.com', 'About Ventio')}
+                      className="hover:text-white transition"
+                    >
+                      About Ventio
+                    </a>
+                  </li>
                   <li><Link href="/contact" className="hover:text-white transition">Contact</Link></li>
                 </ul>
               </div>
