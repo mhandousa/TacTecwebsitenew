@@ -1,12 +1,16 @@
 import React, { Component, ReactNode } from 'react';
+import { captureError, ErrorSeverity } from '@/utils/errorReporting';
 
 interface Props {
   children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 }
 
 interface State {
   hasError: boolean;
   error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -25,13 +29,46 @@ export class ErrorBoundary extends Component<Props, State> {
     if (process.env.NODE_ENV === 'development') {
       console.error('Error caught by ErrorBoundary:', error, errorInfo);
     }
-    
-    // You can also log to an error reporting service here
-    // Example: logErrorToService(error, errorInfo);
+
+    // Update state with error info
+    this.setState({ errorInfo });
+
+    // Report error to monitoring service
+    captureError(error, {
+      severity: ErrorSeverity.Fatal,
+      context: {
+        component: 'ErrorBoundary',
+        componentStack: errorInfo.componentStack,
+        errorBoundary: true,
+      },
+    });
+
+    // Call custom error handler if provided
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo);
+    }
   }
+
+  handleReload = () => {
+    // Clear error state and reload
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    window.location.reload();
+  };
+
+  handleGoHome = () => {
+    // Clear error state and navigate home
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    window.location.href = '/';
+  };
 
   render() {
     if (this.state.hasError) {
+      // Use custom fallback if provided
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      // Default error UI
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 px-6">
           <div className="max-w-lg w-full text-center">
@@ -60,33 +97,66 @@ export class ErrorBoundary extends Component<Props, State> {
             </h1>
             
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-              We're sorry, but something unexpected happened. Please try refreshing the page.
+              We're sorry, but something unexpected happened. Our team has been notified and we're working on a fix.
             </p>
 
             {/* Error Details (Development Only) */}
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <div className="mb-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
-                <p className="text-sm font-mono text-red-600 dark:text-red-400 break-all">
+                <p className="text-sm font-mono text-red-600 dark:text-red-400 break-all mb-2">
                   {this.state.error.toString()}
                 </p>
+                {this.state.error.stack && (
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
+                      Stack Trace
+                    </summary>
+                    <pre className="mt-2 text-xs text-gray-600 dark:text-gray-400 overflow-x-auto">
+                      {this.state.error.stack}
+                    </pre>
+                  </details>
+                )}
+                {this.state.errorInfo && (
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
+                      Component Stack
+                    </summary>
+                    <pre className="mt-2 text-xs text-gray-600 dark:text-gray-400 overflow-x-auto">
+                      {this.state.errorInfo.componentStack}
+                    </pre>
+                  </details>
+                )}
               </div>
             )}
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => window.location.reload()}
+                onClick={this.handleReload}
                 className="inline-block bg-sky-500 hover:bg-sky-600 text-white px-8 py-3 rounded-lg font-semibold transition"
               >
                 Reload Page
               </button>
               
               <button
-                onClick={() => window.location.href = '/'}
+                onClick={this.handleGoHome}
                 className="inline-block border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-8 py-3 rounded-lg font-semibold transition"
               >
                 Go Home
               </button>
+            </div>
+
+            {/* Support Info */}
+            <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                If this problem persists, please contact{' '}
+                <a 
+                  href="mailto:support@tactec.club" 
+                  className="text-sky-600 hover:underline"
+                >
+                  support@tactec.club
+                </a>
+              </p>
             </div>
           </div>
         </div>
