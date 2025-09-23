@@ -1,6 +1,6 @@
 {
   "nav": {
-    "club_os": "Sistema del Club",
+    "club_os": "Système du Club",
     "challenge": "Défi",
     "solution": "Solution",
     "features": "Fonctionnalités",
@@ -10,75 +10,75 @@
     "signin": "Se Connecter"
   },
   "hero": {
-    "trusted": "Fiable par les clubs et le personnel",
+    "trusted": "Approuvé par les clubs et le personnel",
     "title": "Révolutionner",
     "title_highlight": "la Gestion des Clubs de Football",
     "subtitle": "TACTEC unifie la science du sport, le médical, le tactique et les opérations dans une seule plateforme claire pour chaque département.",
     "cta": {
-      "start": "Comenzar",
-      "demo": "Solicitar Demostración"
+      "start": "Commencer",
+      "demo": "Demander une Démo"
     },
     "stats": {
-      "injury": "Menos lesiones musculares",
-      "sync": "Sincronización de datos más rápida"
+      "injury": "Moins de blessures des tissus mous",
+      "sync": "Synchronisation des données plus rapide"
     }
   },
   "challenge": {
-    "eyebrow": "El Desafío",
-    "title": "Las operaciones fragmentadas ralentizan a los clubes",
-    "subtitle": "Los datos están dispersos. Los flujos de trabajo son manuales. La información llega tarde.",
+    "eyebrow": "Le Défi",
+    "title": "Les opérations fragmentées ralentissent les clubs",
+    "subtitle": "Les données sont dispersées. Les flux de travail sont manuels. Les informations arrivent tard.",
     "items": {
       "staff": {
-        "title": "Alineación del Personal",
-        "desc": "Los equipos médicos, técnicos y de análisis trabajan en silos con esfuerzos duplicados."
+        "title": "Alignement du Personnel",
+        "desc": "Les équipes médicales, d'entraînement et d'analyse travaillent en silos avec des efforts dupliqués."
       },
       "workflows": {
-        "title": "Flujos de Trabajo Manuales",
-        "desc": "Informes, planificación y comunicación repartidos en varias herramientas y hojas de cálculo."
+        "title": "Flux de Travail Manuels",
+        "desc": "Les rapports, la planification et la communication sont répartis entre plusieurs outils et feuilles de calcul."
       },
       "insights": {
-        "title": "Información Lenta",
-        "desc": "Las decisiones dependen de datos retrasados o incompletos."
+        "title": "Informations Lentes",
+        "desc": "Les décisions reposent sur des informations retardées ou incomplètes."
       }
     }
   },
   "solution": {
-    "eyebrow": "La Solución",
-    "title": "Un sistema operativo para su club",
-    "subtitle": "Una personas, procesos y rendimiento con TACTEC."
+    "eyebrow": "La Solution",
+    "title": "Un système d'exploitation pour votre club",
+    "subtitle": "Rassemblez les personnes, les processus et les performances avec TACTEC."
   },
   "features": {
-    "eyebrow": "Características Principales",
-    "title": "Todo lo que su personal necesita",
-    "subtitle": "Gestión del equipo, pizarras tácticas, bienestar y área médica, informes y más."
+    "eyebrow": "Fonctionnalités Principales",
+    "title": "Tout ce dont votre personnel a besoin",
+    "subtitle": "Gestion d'équipe, tableaux tactiques, bien-être et médical, rapports et plus encore."
   },
   "tech": {
-    "eyebrow": "Tecnología",
-    "title": "Arquitectura limpia. Multiplataforma. Rápida.",
-    "subtitle": "Tecnología moderna, diseño universal y un potente motor gráfico."
+    "eyebrow": "Technologie",
+    "title": "Architecture propre. Multi-plateforme. Rapide.",
+    "subtitle": "Stack moderne, conception universelle et un moteur graphique puissant."
   },
   "cta": {
-    "eyebrow": "Próximo Paso",
-    "title": "Vea TACTEC en acción",
-    "subtitle": "Solicite una demostración en vivo o pruebe la aplicación para jugadores.",
+    "eyebrow": "Prochaine Étape",
+    "title": "Voyez TACTEC en action",
+    "subtitle": "Demandez une démo en direct ou essayez l'application joueur.",
     "buttons": {
-      "demo": "Solicitar Demostración en Vivo",
-      "app": "Probar la App del Jugador"
+      "demo": "Demander une Démo en Direct",
+      "app": "Essayer l'App Joueur"
     }
   },
   "footer": {
-    "about": "TACTEC by Ventio. Creado para clubes profesionales y academias.",
-    "product": "Producto: TACTEC",
-    "company": "Empresa: Ventio",
-    "rights": "© Ventio. Todos los derechos reservados.",
-    "made": "Hecho con dedicación al fútbol."
+    "about": "TACTEC par Ventio. Conçu pour les clubs professionnels et les académies.",
+    "product": "Produit: TACTEC",
+    "company": "Entreprise: Ventio",
+    "rights": "© Ventio. Tous droits réservés.",
+    "made": "Fait avec soin pour le football."
   },
   "faq": {
-    "q1": "¿Qué es TACTEC?",
-    "a1": "TACTEC es un sistema operativo unificado para clubes de fútbol que cubre el área médica, táctica, de rendimiento y operaciones.",
-    "q2": "¿TACTEC es multilingüe?",
-    "a2": "Sí. La interfaz admite árabe, portugués (UE), portugués brasileño, español, francés, italiano, alemán e inglés.",
-    "q3": "¿Cómo empezar?",
-    "a3": "Contáctenos para una demostración en vivo y un plan de incorporación."
+    "q1": "Qu'est-ce que TACTEC?",
+    "a1": "TACTEC est un système d'exploitation unifié pour les clubs de football couvrant le médical, le tactique, les performances et les opérations.",
+    "q2": "TACTEC est-il multilingue?",
+    "a2": "Oui. L'interface prend en charge l'arabe, le portugais (UE), le portugais brésilien, l'espagnol, le français, l'italien, l'allemand et l'anglais.",
+    "q3": "Comment commencer?",
+    "a3": "Contactez-nous pour une démo en direct et un plan d'intégration."
   }
 }
