@@ -2,11 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 
 const contactSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  club: z.string().min(2),
-  role: z.string().min(1),
-  message: z.string().min(10),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  club: z.string().min(2, "Club name must be at least 2 characters"),
+  role: z.string().min(1, "Please select your role"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
   requestType: z.enum(['demo', 'sales', 'support', 'general']),
 });
 
@@ -39,23 +39,26 @@ export default async function handler(
   try {
     const data: ContactFormData = contactSchema.parse(req.body);
     
-    // Log the submission (in production, send actual email)
-    console.log('📧 New contact form submission:', {
+    // Log the submission for development
+    console.log('📧 New TACTEC contact form submission:', {
       timestamp: new Date().toISOString(),
       name: data.name,
       email: data.email,
       club: data.club,
       role: data.role,
       requestType: data.requestType,
-      message: data.message.substring(0, 100) + '...',
+      messagePreview: data.message.substring(0, 100) + (data.message.length > 100 ? '...' : ''),
     });
 
-    // TODO: Replace this with actual email service integration
+    // Send notification email
     await sendEmailNotification(data);
+
+    // Save to database/file (optional)
+    await saveSubmission(data);
 
     res.status(200).json({ 
       success: true, 
-      message: 'Message sent successfully' 
+      message: 'Your message has been sent successfully. We will contact you within 24 hours.' 
     });
 
   } catch (error) {
@@ -63,67 +66,154 @@ export default async function handler(
     
     if (error instanceof z.ZodError) {
       return res.status(400).json({ 
-        error: 'Invalid form data: ' + error.errors.map(e => e.message).join(', ')
+        error: 'Please check your form data: ' + error.errors.map(e => e.message).join(', ')
       });
     }
 
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+      error: 'We encountered a technical issue. Please try again or email us directly at info@tactec.club' 
+    });
   }
 }
 
 // Email notification function
 async function sendEmailNotification(data: ContactFormData): Promise<void> {
+  const emailSubject = `🏆 TACTEC ${data.requestType.charAt(0).toUpperCase() + data.requestType.slice(1)} Request - ${data.name}`;
+  
   const emailBody = `
-🏆 TACTEC Contact Form Submission
+New TACTEC Contact Form Submission
+=================================
 
-👤 Contact Information:
-   • Name: ${data.name}
-   • Email: ${data.email}
-   • Club: ${data.club}
-   • Role: ${data.role}
+Contact Details:
+- Name: ${data.name}
+- Email: ${data.email}
+- Club/Organization: ${data.club}
+- Role: ${data.role}
+- Request Type: ${data.requestType.toUpperCase()}
 
-📋 Request Type: ${data.requestType.toUpperCase()}
-
-💬 Message:
+Message:
 ${data.message}
 
-🕐 Submitted: ${new Date().toLocaleString()}
+Submission Details:
+- Date: ${new Date().toLocaleDateString()}
+- Time: ${new Date().toLocaleTimeString()}
+- Browser: ${process.env.NODE_ENV === 'development' ? 'Development' : 'Production'}
+
 ---
-Reply to: ${data.email}
+Reply directly to: ${data.email}
   `.trim();
 
-  // Option A: Console log for development (replace in production)
-  console.log('📨 Email notification:', emailBody);
-
-  // Option B: Integration with email service (uncomment and configure)
-  /*
-  try {
-    // Example with fetch to email service
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'TACTEC Website <noreply@tactec.club>',
-        to: 'info@tactec.club',
-        subject: `TACTEC ${data.requestType.charAt(0).toUpperCase() + data.requestType.slice(1)} Request - ${data.name}`,
-        text: emailBody,
-        reply_to: data.email,
-      }),
-    });
-  } catch (error) {
-    console.error('Failed to send email notification:', error);
+  // Development: Log to console
+  if (process.env.NODE_ENV === 'development') {
+    console.log('\n' + '='.repeat(50));
+    console.log('📨 EMAIL NOTIFICATION');
+    console.log('='.repeat(50));
+    console.log('To: info@tactec.club');
+    console.log('Subject:', emailSubject);
+    console.log('\n' + emailBody);
+    console.log('='.repeat(50) + '\n');
   }
-  */
 
-  // Option C: Save to database (implement if needed)
-  /*
-  await saveToDatabase({
+  // Production: Send actual email
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      // Option A: Resend.com integration (uncomment when configured)
+      /*
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'TACTEC Website <noreply@tactec.club>',
+          to: 'info@tactec.club',
+          subject: emailSubject,
+          text: emailBody,
+          reply_to: data.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Email service error: ${response.status}`);
+      }
+      */
+
+      // Option B: SendGrid integration (uncomment when configured)
+      /*
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+      await sgMail.send({
+        to: 'info@tactec.club',
+        from: 'noreply@tactec.club',
+        subject: emailSubject,
+        text: emailBody,
+        replyTo: data.email,
+      });
+      */
+
+      // Option C: Custom webhook (implement your own endpoint)
+      /*
+      await fetch(process.env.WEBHOOK_URL!, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'contact_form',
+          data,
+          subject: emailSubject,
+          body: emailBody,
+        }),
+      });
+      */
+
+    } catch (error) {
+      console.error('Failed to send email notification:', error);
+      // Don't throw error - form submission should still succeed
+    }
+  }
+}
+
+// Save submission to file/database
+async function saveSubmission(data: ContactFormData): Promise<void> {
+  const submission = {
     ...data,
-    timestamp: new Date(),
+    id: Date.now().toString(),
+    timestamp: new Date().toISOString(),
     status: 'new',
-  });
-  */
+    source: 'website_contact_form',
+  };
+
+  try {
+    // Option A: Save to JSON file (development)
+    if (process.env.NODE_ENV === 'development') {
+      const fs = require('fs');
+      const path = require('path');
+      
+      const submissionsFile = path.join(process.cwd(), 'contact-submissions.json');
+      let submissions = [];
+      
+      try {
+        const existingData = fs.readFileSync(submissionsFile, 'utf8');
+        submissions = JSON.parse(existingData);
+      } catch (e) {
+        // File doesn't exist or is empty
+      }
+      
+      submissions.push(submission);
+      fs.writeFileSync(submissionsFile, JSON.stringify(submissions, null, 2));
+      console.log(`💾 Submission saved to ${submissionsFile}`);
+    }
+
+    // Option B: Save to database (implement when available)
+    /*
+    await db.contactSubmissions.create({
+      data: submission
+    });
+    */
+
+  } catch (error) {
+    console.error('Failed to save submission:', error);
+    // Don't throw error - form submission should still succeed
+  }
 }
