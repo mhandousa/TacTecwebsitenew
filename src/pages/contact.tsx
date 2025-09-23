@@ -1,14 +1,92 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { SITE_URL } from "@/config/env";
+import { trackEvent } from "@/utils/analytics";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import fs from "fs";
 import path from "path";
 
+// Form validation schema
+const contactFormSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  club: z.string().min(2, "Club name must be at least 2 characters"),
+  role: z.string().min(1, "Please select your role"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+  requestType: z.enum(['demo', 'sales', 'support', 'general']),
+});
+
+type ContactFormData = z.infer<typeof contactFormSchema>;
+
 export default function ContactPage() {
   const router = useRouter();
   const { locale } = router;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      requestType: 'demo',
+    },
+  });
+
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      // Track form submission
+      trackEvent('form_submit', {
+        form_type: 'contact',
+        request_type: data.requestType,
+      });
+
+      // In production, send to your backend API
+      // For now, we'll use a mailto fallback
+      const subject = `TACTEC ${data.requestType.charAt(0).toUpperCase() + data.requestType.slice(1)} Request`;
+      const body = `
+Name: ${data.name}
+Email: ${data.email}
+Club: ${data.club}
+Role: ${data.role}
+
+Message:
+${data.message}
+      `.trim();
+
+      // Create mailto link
+      const mailtoLink = `mailto:info@tactec.club?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      
+      // Open email client
+      window.location.href = mailtoLink;
+
+      // Show success message
+      setSubmitStatus('success');
+      reset();
+
+      // Track conversion
+      trackEvent('demo_request', {
+        request_type: data.requestType,
+      });
+
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -42,6 +120,134 @@ export default function ContactPage() {
             </p>
 
             <div className="grid md:grid-cols-2 gap-12">
+              {/* Contact Form */}
+              <div className="bg-white dark:bg-gray-800 p-8 rounded-xl border shadow-sm">
+                <h2 className="text-2xl font-semibold mb-6">Send us a message</h2>
+
+                {submitStatus === 'success' && (
+                  <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-green-800 dark:text-green-200 text-sm">
+                      ✅ Thank you! Your message has been sent. We'll get back to you soon.
+                    </p>
+                  </div>
+                )}
+
+                {submitStatus === 'error' && (
+                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-red-800 dark:text-red-200 text-sm">
+                      ❌ Something went wrong. Please try again or email us directly at info@tactec.club
+                    </p>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  {/* Request Type */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      What can we help you with? <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      {...register('requestType')}
+                      className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    >
+                      <option value="demo">Request a Demo</option>
+                      <option value="sales">Sales Inquiry</option>
+                      <option value="support">Technical Support</option>
+                      <option value="general">General Question</option>
+                    </select>
+                  </div>
+
+                  {/* Name */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Your Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      {...register('name')}
+                      type="text"
+                      className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      placeholder="John Smith"
+                    />
+                    {errors.name && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
+                    )}
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      {...register('email')}
+                      type="email"
+                      className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      placeholder="john@club.com"
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+                    )}
+                  </div>
+
+                  {/* Club */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Club/Organization <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      {...register('club')}
+                      type="text"
+                      className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      placeholder="Your Football Club"
+                    />
+                    {errors.club && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.club.message}</p>
+                    )}
+                  </div>
+
+                  {/* Role */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Your Role <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      {...register('role')}
+                      type="text"
+                      className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      placeholder="e.g., Head Coach, Medical Director"
+                    />
+                    {errors.role && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.role.message}</p>
+                    )}
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Message <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      {...register('message')}
+                      rows={4}
+                      className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
+                      placeholder="Tell us about your needs..."
+                    />
+                    {errors.message && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.message.message}</p>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                  </button>
+                </form>
+              </div>
+
               {/* Contact Info */}
               <div className="space-y-8">
                 <div>
@@ -92,48 +298,6 @@ export default function ContactPage() {
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     We typically respond to all inquiries within 24 hours during business days.
                   </p>
-                </div>
-              </div>
-
-              {/* CTA Cards */}
-              <div className="space-y-6">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border shadow-sm">
-                  <h3 className="text-xl font-semibold mb-3">Schedule a Demo</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    See TACTEC in action with a personalized demonstration for your club.
-                  </p>
-                  <a 
-                    href="mailto:info@tactec.club?subject=Demo Request" 
-                    className="inline-block bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg font-semibold transition"
-                  >
-                    Request Demo
-                  </a>
-                </div>
-
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border shadow-sm">
-                  <h3 className="text-xl font-semibold mb-3">Sales Inquiry</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Get pricing information and discuss how TACTEC fits your needs.
-                  </p>
-                  <a 
-                    href="mailto:info@tactec.club?subject=Sales Inquiry" 
-                    className="inline-block border border-sky-500 hover:bg-sky-500 hover:text-white text-sky-500 px-6 py-3 rounded-lg font-semibold transition"
-                  >
-                    Contact Sales
-                  </a>
-                </div>
-
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border shadow-sm">
-                  <h3 className="text-xl font-semibold mb-3">Support</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Already a TACTEC user? Get technical support and assistance.
-                  </p>
-                  <a 
-                    href="mailto:support@tactec.club?subject=Support Request" 
-                    className="inline-block border border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold transition"
-                  >
-                    Get Support
-                  </a>
                 </div>
               </div>
             </div>
