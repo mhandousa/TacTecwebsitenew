@@ -26,7 +26,7 @@ NEXT_PUBLIC_SITE_URL=https://tactec.club
 # Get this from your Sentry project settings
 # Format: https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 # Leave empty to disable Sentry error reporting
-NEXT_PUBLIC_SENTRY_DSN=
+NEXT_PUBLIC_SENTRY_DSN=https://2cf687ecfc4a384b29427b68fb1b1248@o4510068795375616.ingest.de.sentry.io/4510068798521424
 
 # Optional: Sentry environment name
 # NEXT_PUBLIC_SENTRY_ENVIRONMENT=production
