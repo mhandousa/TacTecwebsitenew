@@ -24,12 +24,22 @@ export const ANALYTICS_EVENTS = {
   
   // Language Events
   LANGUAGE_SWITCH: 'language_switch',
+  
+  // Engagement Events
+  SCROLL_DEPTH_25: 'scroll_depth_25',
+  SCROLL_DEPTH_50: 'scroll_depth_50',
+  SCROLL_DEPTH_75: 'scroll_depth_75',
+  SCROLL_DEPTH_100: 'scroll_depth_100',
+  
+  // External Link Events
+  EXTERNAL_LINK_CLICK: 'external_link_click',
 } as const;
 
 export type AnalyticsEvent = typeof ANALYTICS_EVENTS[keyof typeof ANALYTICS_EVENTS];
 
 /**
  * Send a pageview event to Google Analytics
+ * USE ONLY FOR PAGE NAVIGATION, not for button clicks
  * @param url - The page URL or path
  */
 export const pageview = (url: string): void => {
@@ -56,6 +66,7 @@ export const pageview = (url: string): void => {
 
 /**
  * Track a custom event in Google Analytics
+ * USE THIS for button clicks, interactions, and custom events
  * @param event - The event name (use ANALYTICS_EVENTS constants)
  * @param params - Additional event parameters
  */
@@ -92,4 +103,65 @@ export const trackLanguageSwitch = (from: string, to: string): void => {
     from_language: from,
     to_language: to,
   });
+};
+
+/**
+ * Track external link clicks
+ * @param url - The external URL being clicked
+ * @param linkText - The text of the link
+ */
+export const trackExternalLink = (url: string, linkText?: string): void => {
+  trackEvent(ANALYTICS_EVENTS.EXTERNAL_LINK_CLICK, {
+    url,
+    link_text: linkText,
+  });
+};
+
+/**
+ * Track scroll depth milestones
+ * @param percentage - Scroll depth percentage (25, 50, 75, 100)
+ */
+export const trackScrollDepth = (percentage: number): void => {
+  const eventMap: Record<number, AnalyticsEvent> = {
+    25: ANALYTICS_EVENTS.SCROLL_DEPTH_25,
+    50: ANALYTICS_EVENTS.SCROLL_DEPTH_50,
+    75: ANALYTICS_EVENTS.SCROLL_DEPTH_75,
+    100: ANALYTICS_EVENTS.SCROLL_DEPTH_100,
+  };
+
+  const event = eventMap[percentage];
+  if (event) {
+    trackEvent(event, { scroll_depth: percentage });
+  }
+};
+
+/**
+ * Initialize scroll depth tracking
+ * Call this once when the page loads
+ */
+export const initScrollTracking = (): (() => void) => {
+  if (typeof window === 'undefined') return () => {};
+
+  const scrollDepths = [25, 50, 75, 100];
+  const triggered = new Set<number>();
+
+  const handleScroll = () => {
+    const scrollPercentage = Math.round(
+      ((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100
+    );
+
+    scrollDepths.forEach(depth => {
+      if (scrollPercentage >= depth && !triggered.has(depth)) {
+        triggered.add(depth);
+        trackScrollDepth(depth);
+      }
+    });
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // Cleanup function
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
 };
