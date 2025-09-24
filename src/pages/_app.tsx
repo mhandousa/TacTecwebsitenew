@@ -84,7 +84,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                   release: process.env.NEXT_PUBLIC_SENTRY_RELEASE || '1.0.0',
                   
                   // Custom error filtering
-                  bbeforeSend(event: any, hint: any) { {
+                  beforeSend(event: any, hint: any) {
                     // Filter out errors in development
                     if (process.env.NODE_ENV === 'development') {
                       console.log('[Sentry] Event captured in development:', event);
