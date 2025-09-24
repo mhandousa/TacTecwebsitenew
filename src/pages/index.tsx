@@ -1,19 +1,23 @@
 import TacTecLanding from "@/components/TacTecLanding";
 import { GetStaticProps } from "next";
-import fs from "fs";
-import path from "path";
+
+// ✅ Removed fs/path from top-level imports
 
 export default TacTecLanding;
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  // Import Node modules only at build-time (server only)
+  const fs = await import("fs");
+  const path = await import("path");
+
   const localeToUse = locale || "en";
-  
+
   // Path to locale files
   const filePath = path.join(process.cwd(), "src/locales", localeToUse, "common.json");
   const fallbackPath = path.join(process.cwd(), "src/locales", "en", "common.json");
-  
+
   let messages = {};
-  
+
   try {
     const fileContent = fs.readFileSync(filePath, "utf-8");
     messages = JSON.parse(fileContent);
@@ -28,7 +32,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       messages = {};
     }
   }
-  
+
   return {
     props: {
       messages,
