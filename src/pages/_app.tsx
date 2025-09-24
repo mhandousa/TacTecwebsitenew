@@ -14,7 +14,7 @@ const pageview = (url: string) => {
 };
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  const { events } = useRouter();
+  const { events, locale } = useRouter();
 
   useEffect(() => {
     const handleRouteChange = (url: string) => pageview(url);
@@ -24,11 +24,27 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     };
   }, [events]);
 
+  // Ensure messages is always defined and is an object
+  // This prevents the NextIntlClientProvider from failing during prerendering
+  const messages = pageProps.messages || {};
+  const currentLocale = locale || pageProps.locale || 'en';
+
   return (
     <NextIntlClientProvider 
-      messages={pageProps.messages}
+      messages={messages}
+      locale={currentLocale}
       timeZone="UTC"
       now={new Date()}
+      // Add default values to handle missing translations gracefully
+      defaultTranslationValues={{
+        br: (chunks) => <br />,
+      }}
+      // Handle missing translations without throwing errors
+      onError={(error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Translation error:', error);
+        }
+      }}
     >
       {GA_TRACKING_ID && (
         <>
