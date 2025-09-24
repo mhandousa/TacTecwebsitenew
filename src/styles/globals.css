@@ -279,7 +279,7 @@
 }
 
 .dark-image {
-  /* Fixed: use arbitrary value for contrast */
+  /* Fixed: Tailwind arbitrary value for 110% contrast */
   @apply dark:brightness-90 dark:contrast-[1.1];
 }
 
