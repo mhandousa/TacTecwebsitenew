@@ -8,10 +8,11 @@ export default function Custom404() {
   const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
+    if (!router) return; // ✅ Guard against prerender
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          router.push('/');
+          router.push("/");
           return 0;
         }
         return prev - 1;
@@ -40,29 +41,32 @@ export default function Custom404() {
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Page Not Found
           </h2>
-          
+
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            Looks like this page has been sent off! The page you're looking for doesn't exist or has been moved.
+            Looks like this page has been sent off! The page you're looking for
+            doesn't exist or has been moved.
           </p>
 
           {/* Countdown */}
           <div className="mb-8">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Redirecting to homepage in <span className="font-bold text-sky-500">{countdown}</span> seconds...
+              Redirecting to homepage in{" "}
+              <span className="font-bold text-sky-500">{countdown}</span>{" "}
+              seconds...
             </p>
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
+            <Link
               href="/"
               className="inline-block bg-sky-500 hover:bg-sky-600 text-white px-8 py-3 rounded-lg font-semibold transition"
             >
               Go Home Now
             </Link>
-            
+
             <button
-              onClick={() => router.back()}
+              onClick={() => router.back?.()}
               className="inline-block border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-8 py-3 rounded-lg font-semibold transition"
             >
               Go Back
@@ -84,10 +88,10 @@ export default function Custom404() {
               <Link href="/contact" className="text-sky-600 hover:underline">
                 Contact Us
               </Link>
-              <a 
-                href="https://ventio.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://ventio.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-sky-600 hover:underline"
               >
                 About Ventio
