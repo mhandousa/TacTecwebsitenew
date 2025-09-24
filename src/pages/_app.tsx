@@ -29,9 +29,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const messages = pageProps.messages || {};
   const currentLocale = locale || pageProps.locale || 'en';
 
+  // ✅ ADDED: Validate messages is proper object structure
+  const validMessages = (typeof messages === 'object' && messages !== null && !Array.isArray(messages)) ? messages : {};
+
   return (
     <NextIntlClientProvider 
-      messages={messages}
+      messages={validMessages}
       locale={currentLocale}
       timeZone="UTC"
       now={new Date()}
@@ -44,6 +47,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         if (process.env.NODE_ENV === 'development') {
           console.warn('Translation error:', error);
         }
+      }}
+      // ✅ ADDED: Critical fallback for missing translations
+      getMessageFallback={({ namespace, key }) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Missing translation: ${namespace ? namespace + '.' : ''}${key}`);
+        }
+        return `${namespace ? namespace + '.' : ''}${key}`;
       }}
     >
       {GA_TRACKING_ID && (
