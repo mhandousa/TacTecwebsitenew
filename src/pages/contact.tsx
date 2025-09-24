@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { GetStaticProps } from "next";
 import { SITE_URL } from "@/config/env";
 import { trackEvent } from "@/utils/analytics";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -170,12 +171,12 @@ export default function ContactPage() {
   );
 }
 
-// ✅ Fixed: moved fs/path imports inside getStaticProps
-export async function getStaticProps({ locale }: { locale: string }) {
+// ✅ FIXED: Correct Next.js getStaticProps signature
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const fs = await import("fs");
   const path = await import("path");
 
-  const filePath = path.join(process.cwd(), "src/locales", locale, "common.json");
+  const filePath = path.join(process.cwd(), "src/locales", locale || "en", "common.json");
   const fallbackPath = path.join(
     process.cwd(),
     "src/locales",
@@ -191,4 +192,4 @@ export async function getStaticProps({ locale }: { locale: string }) {
   }
 
   return { props: { messages } };
-}
+};
