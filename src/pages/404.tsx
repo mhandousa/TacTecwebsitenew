@@ -3,12 +3,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-export default function Custom404() {
+export default function Client404() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
-    if (!router) return; // ✅ Guard against prerender
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -66,7 +65,7 @@ export default function Custom404() {
             </Link>
 
             <button
-              onClick={() => router.back?.()}
+              onClick={() => router.back()}
               className="inline-block border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-8 py-3 rounded-lg font-semibold transition"
             >
               Go Back
