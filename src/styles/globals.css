@@ -279,7 +279,8 @@
 }
 
 .dark-image {
-  @apply dark:brightness-90 dark:contrast-110;
+  /* Fixed: use arbitrary value for contrast */
+  @apply dark:brightness-90 dark:contrast-[1.1];
 }
 
 /* ===== MOBILE OPTIMIZATIONS ===== */
