@@ -6,7 +6,6 @@ export default function CookieConsent() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user has already made a choice
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
       setShowBanner(true);
