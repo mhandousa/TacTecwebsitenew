@@ -13,11 +13,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const { events, locale, pathname } = router;
 
-  // Initialize error reporting on mount
   useEffect(() => {
     initErrorReporting();
-
-    // Set initial context
     setErrorContext({
       locale: locale || 'en',
       pathname,
@@ -25,7 +22,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     });
   }, []);
 
-  // Update error context when route or locale changes
   useEffect(() => {
     setErrorContext({
       locale: locale || 'en',
@@ -33,7 +29,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     });
   }, [locale, pathname]);
 
-  // Track page views
   useEffect(() => {
     const handleRouteChange = (url: string) => pageview(url);
     events.on("routeChangeComplete", handleRouteChange);
@@ -49,7 +44,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         timeZone="UTC"
         now={new Date()}
       >
-        {/* Sentry Error Tracking */}
         {process.env.NEXT_PUBLIC_SENTRY_DSN && (
           <Script
             src="https://js-de.sentry-cdn.com/2cf687ecfc4a384b29427b68fb1b1248.min.js"
@@ -59,12 +53,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
               if (typeof window !== 'undefined' && (window as any).Sentry) {
                 const Sentry = (window as any).Sentry;
                 
-                // Initialize Sentry
                 Sentry.init({
                   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
                   environment: process.env.NODE_ENV,
-                  
-                  // Performance Monitoring
                   integrations: [
                     Sentry.browserTracingIntegration(),
                     Sentry.replayIntegration({
@@ -72,38 +63,26 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                       blockAllMedia: true,
                     }),
                   ],
-                  
-                  // Performance Monitoring
                   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
-                  
-                  // Session Replay
                   replaysSessionSampleRate: 0.1,
                   replaysOnErrorSampleRate: 1.0,
-                  
-                  // Release tracking
                   release: process.env.NEXT_PUBLIC_SENTRY_RELEASE || '1.0.0',
-                  
-                  // Custom error filtering
                   beforeSend(event: any, hint: any) {
-                    // Filter out errors in development
                     if (process.env.NODE_ENV === 'development') {
                       console.log('[Sentry] Event captured in development:', event);
-                      return null; // Don't send in development
+                      return null;
                     }
                     
-                    // Filter out common non-actionable errors
                     const error = hint.originalException;
                     if (error && typeof error === 'object' && 'message' in error) {
                       const message = (error as Error).message;
                       
-                      // Skip common browser extension errors
                       if (message.includes('Extension context invalidated') ||
                           message.includes('chrome-extension://') ||
                           message.includes('moz-extension://')) {
                         return null;
                       }
                       
-                      // Skip network errors that aren't actionable
                       if (message.includes('NetworkError') && 
                           message.includes('fetch')) {
                         return null;
@@ -112,18 +91,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                     
                     return event;
                   },
-                  
-                  // Additional configuration
                   beforeBreadcrumb(breadcrumb) {
-                    // Filter out noisy breadcrumbs
                     if (breadcrumb.category === 'console' && 
                         breadcrumb.level === 'log') {
                       return null;
                     }
                     return breadcrumb;
                   },
-                  
-                  // Set user context
                   initialScope: {
                     tags: {
                       component: 'app',
@@ -137,16 +111,14 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                   },
                 });
 
-                // Set additional context
                 Sentry.setContext('locale', {
                   current: locale || 'en',
                   available: router.locales || ['en'],
                 });
 
-                // Set user context (if you have user data)
                 Sentry.setUser({
                   id: 'anonymous',
-                  ip_address: '{{auto}}', // Let Sentry determine IP
+                  ip_address: '{{auto}}',
                 });
 
                 console.log('[Sentry] Initialized successfully');
@@ -158,7 +130,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           />
         )}
 
-        {/* Google Analytics with Consent Mode */}
         {GA_TRACKING_ID && (
           <>
             <Script
@@ -171,7 +142,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 
-                // Default consent mode - denied until user accepts
                 gtag('consent', 'default', {
                   'analytics_storage': 'denied',
                   'ad_storage': 'denied',
