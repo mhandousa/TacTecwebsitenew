@@ -43,6 +43,18 @@ export default function LanguageSwitcher() {
     };
   }, [isOpen]);
 
+  // Close on Escape key
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+
   const currentLocale = locales.find(l => l.code === locale) || locales[0];
 
   return (
@@ -52,23 +64,31 @@ export default function LanguageSwitcher() {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="px-3 py-2 border rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2"
-          aria-label="Select language"
+          aria-label={`Current language: ${currentLocale.name}. Click to change language.`}
           aria-expanded={isOpen}
           aria-haspopup="true"
+          aria-controls="language-menu-mobile"
         >
-          <span>{currentLocale.label}</span>
+          <span aria-hidden="true">{currentLocale.label}</span>
           <svg 
             className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
 
         {isOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border rounded-md shadow-lg z-50">
+          <div 
+            id="language-menu-mobile"
+            className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border rounded-md shadow-lg z-50"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="language-button"
+          >
             {locales.map(l => (
               <Link
                 key={l.code}
@@ -79,8 +99,11 @@ export default function LanguageSwitcher() {
                 className={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                   l.code === locale ? 'bg-gray-100 dark:bg-gray-700 font-semibold' : ''
                 }`}
+                role="menuitem"
+                aria-current={l.code === locale ? 'true' : undefined}
+                lang={l.code}
               >
-                <span className="font-medium">{l.label}</span>
+                <span className="font-medium" aria-hidden="true">{l.label}</span>
                 <span className="ml-2 text-gray-600 dark:text-gray-400">{l.name}</span>
               </Link>
             ))}
@@ -89,7 +112,11 @@ export default function LanguageSwitcher() {
       </div>
 
       {/* Desktop Inline Buttons */}
-      <div className="hidden md:inline-flex border rounded-md overflow-hidden text-xs" role="group" aria-label="Language switcher">
+      <div 
+        className="hidden md:inline-flex border rounded-md overflow-hidden text-xs" 
+        role="group" 
+        aria-label="Language selection"
+      >
         {locales.map(l => (
           <Link 
             key={l.code} 
@@ -104,6 +131,8 @@ export default function LanguageSwitcher() {
             }`}
             aria-label={`Switch to ${l.name}`}
             aria-current={l.code === locale ? 'true' : undefined}
+            lang={l.code}
+            title={l.name}
           >
             {l.label}
           </Link>
