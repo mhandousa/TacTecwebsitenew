@@ -15,6 +15,16 @@ export default function MyDocument({ locale }: Props) {
         <meta name="author" content="Ventio" />
         <meta name="robots" content="index, follow" />
         
+        {/* Font Optimization - Preconnect */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Optimized Font Loading - Inter */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+        
         {/* Favicon and App Icons */}
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
@@ -49,20 +59,10 @@ export default function MyDocument({ locale }: Props) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="TACTEC" />
-        <link rel="apple-touch-startup-image" href="/icons/apple-launch-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" />
-        <link rel="apple-touch-startup-image" href="/icons/apple-launch-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" />
-        <link rel="apple-touch-startup-image" href="/icons/apple-launch-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" />
-        
-        {/* Microsoft Specific */}
-        <meta name="msapplication-starturl" content="/" />
-        <meta name="msapplication-navbutton-color" content="#0ea5e9" />
         
         {/* Performance and Preloading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://sentry.io" />
         
         {/* Default Open Graph Tags */}
         <meta property="og:site_name" content="TACTEC" />
@@ -137,7 +137,7 @@ export default function MyDocument({ locale }: Props) {
           }}
         />
       </Head>
-      <body>
+      <body style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
         {/* Skip to Content Link for Accessibility */}
         <a className="skip-to-content" href="#content">Skip to content</a>
         
@@ -157,19 +157,6 @@ export default function MyDocument({ locale }: Props) {
         
         <Main />
         <NextScript />
-        
-        {/* Prevent Flash of Unstyled Content */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Prevent FOUC by hiding body until styles load
-              document.documentElement.classList.add('loading');
-              window.addEventListener('load', function() {
-                document.documentElement.classList.remove('loading');
-              });
-            `
-          }}
-        />
       </body>
     </Html>
   );
@@ -177,7 +164,6 @@ export default function MyDocument({ locale }: Props) {
 
 MyDocument.getInitialProps = async (ctx: DocumentContext) => {
   const initialProps = await Document.getInitialProps(ctx);
-  // @ts-ignore next adds locale on ctx
   const locale = (ctx as any).locale || "en";
   return { ...initialProps, locale } as any;
 };
