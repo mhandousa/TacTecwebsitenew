@@ -1,13 +1,30 @@
-# TacTec Website (Final)
+# TacTec Website
 
-- Next.js 14 + TypeScript + Tailwind + next-intl
-- i18n locales: en, ar, pt, pt-BR, es, fr, it, de
-- GA wired with route-change pageviews and basic Consent Mode
-- RTL supported for Arabic via _document.tsx
+Professional website for TacTec - Football Club Management Platform
+
+## Features
+
+- ✅ Next.js 14 with TypeScript
+- ✅ 8 Language Support (i18n)
+- ✅ RTL Support for Arabic
+- ✅ Google Analytics Integration
+- ✅ Full SEO Optimization
+- ✅ Rate Limiting
+- ✅ Type-Safe Analytics
+- ✅ Accessibility (WCAG AA)
 
 ## Quick Start
 ```bash
-npm i
-cp .env.example .env.local   # set NEXT_PUBLIC_GA_ID and NEXT_PUBLIC_SITE_URL
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env.local
+# Edit .env.local with your values
+
+# Run development server
 npm run dev
-```
+
+# Build for production
+npm run build
+npm start
