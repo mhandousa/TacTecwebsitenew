@@ -18,14 +18,52 @@ interface ApiResponse {
   message?: string;
 }
 
+// Rate limiting store (in-memory - use Redis in production)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+function rateLimit(ip: string, maxRequests: number = 5, windowMs: number = 15 * 60 * 1000): boolean {
+  const now = Date.now();
+  const record = rateLimitStore.get(ip);
+
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(ip, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+
+  if (record.count >= maxRequests) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+}
+
+function getClientIp(req: NextApiRequest): string {
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip = typeof forwarded === 'string' ? forwarded.split(',')[0] : req.socket.remoteAddress;
+  return ip || 'unknown';
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>
 ) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS Configuration
+  const allowedOrigins = [
+    'https://tactec.club',
+    'https://www.tactec.club',
+    ...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000'] : [])
+  ];
+
+  const origin = req.headers.origin;
+  
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -36,10 +74,18 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Rate Limiting
+  const clientIp = getClientIp(req);
+  if (!rateLimit(clientIp)) {
+    return res.status(429).json({ 
+      error: 'Too many requests. Please try again later.' 
+    });
+  }
+
   try {
     const data: ContactFormData = contactSchema.parse(req.body);
     
-    // Log the submission for development
+    // Log the submission
     console.log('📧 New TACTEC contact form submission:', {
       timestamp: new Date().toISOString(),
       name: data.name,
@@ -48,13 +94,14 @@ export default async function handler(
       role: data.role,
       requestType: data.requestType,
       messagePreview: data.message.substring(0, 100) + (data.message.length > 100 ? '...' : ''),
+      ip: clientIp,
     });
 
     // Send notification email
     await sendEmailNotification(data);
 
-    // Save to database/file (optional)
-    await saveSubmission(data);
+    // Save to database/file
+    await saveSubmission(data, clientIp);
 
     res.status(200).json({ 
       success: true, 
@@ -76,7 +123,6 @@ export default async function handler(
   }
 }
 
-// Email notification function
 async function sendEmailNotification(data: ContactFormData): Promise<void> {
   const emailSubject = `🏆 TACTEC ${data.requestType.charAt(0).toUpperCase() + data.requestType.slice(1)} Request - ${data.name}`;
   
@@ -97,13 +143,12 @@ ${data.message}
 Submission Details:
 - Date: ${new Date().toLocaleDateString()}
 - Time: ${new Date().toLocaleTimeString()}
-- Browser: ${process.env.NODE_ENV === 'development' ? 'Development' : 'Production'}
+- Environment: ${process.env.NODE_ENV}
 
 ---
 Reply directly to: ${data.email}
   `.trim();
 
-  // Development: Log to console
   if (process.env.NODE_ENV === 'development') {
     console.log('\n' + '='.repeat(50));
     console.log('📨 EMAIL NOTIFICATION');
@@ -114,78 +159,40 @@ Reply directly to: ${data.email}
     console.log('='.repeat(50) + '\n');
   }
 
-  // Production: Send actual email
-  if (process.env.NODE_ENV === 'production') {
-    try {
-      // Option A: Resend.com integration (uncomment when configured)
-      /*
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'TACTEC Website <noreply@tactec.club>',
-          to: 'info@tactec.club',
-          subject: emailSubject,
-          text: emailBody,
-          reply_to: data.email,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Email service error: ${response.status}`);
-      }
-      */
-
-      // Option B: SendGrid integration (uncomment when configured)
-      /*
-      const sgMail = require('@sendgrid/mail');
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-      await sgMail.send({
-        to: 'info@tactec.club',
-        from: 'noreply@tactec.club',
-        subject: emailSubject,
-        text: emailBody,
-        replyTo: data.email,
-      });
-      */
-
-      // Option C: Custom webhook (implement your own endpoint)
-      /*
-      await fetch(process.env.WEBHOOK_URL!, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'contact_form',
-          data,
-          subject: emailSubject,
-          body: emailBody,
-        }),
-      });
-      */
-
-    } catch (error) {
-      console.error('Failed to send email notification:', error);
-      // Don't throw error - form submission should still succeed
-    }
-  }
+  // TODO: Implement actual email sending in production
+  // Example with Resend:
+  // if (process.env.NODE_ENV === 'production' && process.env.RESEND_API_KEY) {
+  //   const response = await fetch('https://api.resend.com/emails', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       from: 'TACTEC Website <noreply@tactec.club>',
+  //       to: 'info@tactec.club',
+  //       subject: emailSubject,
+  //       text: emailBody,
+  //       reply_to: data.email,
+  //     }),
+  //   });
+  //   if (!response.ok) {
+  //     throw new Error(`Email service error: ${response.status}`);
+  //   }
+  // }
 }
 
-// Save submission to file/database
-async function saveSubmission(data: ContactFormData): Promise<void> {
+async function saveSubmission(data: ContactFormData, ip: string): Promise<void> {
   const submission = {
     ...data,
     id: Date.now().toString(),
     timestamp: new Date().toISOString(),
     status: 'new',
     source: 'website_contact_form',
+    ip,
   };
 
   try {
-    // Option A: Save to JSON file (development)
     if (process.env.NODE_ENV === 'development') {
       const fs = require('fs');
       const path = require('path');
@@ -205,15 +212,8 @@ async function saveSubmission(data: ContactFormData): Promise<void> {
       console.log(`💾 Submission saved to ${submissionsFile}`);
     }
 
-    // Option B: Save to database (implement when available)
-    /*
-    await db.contactSubmissions.create({
-      data: submission
-    });
-    */
-
+    // TODO: Save to production database
   } catch (error) {
     console.error('Failed to save submission:', error);
-    // Don't throw error - form submission should still succeed
   }
 }
