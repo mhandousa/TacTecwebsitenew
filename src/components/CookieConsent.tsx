@@ -3,16 +3,25 @@ import { useRouter } from 'next/router';
 
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
+  // First mount check
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Then check consent after mounted
+  useEffect(() => {
+    if (!mounted) return;
+    
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
       setShowBanner(true);
     } else if (consent === 'accepted') {
       enableAnalytics();
     }
-  }, []);
+  }, [mounted]);
 
   const enableAnalytics = () => {
     if (typeof window !== 'undefined' && window.gtag) {
@@ -40,7 +49,8 @@ export default function CookieConsent() {
     setShowBanner(false);
   };
 
-  if (!showBanner) return null;
+  // Don't render until mounted
+  if (!mounted || !showBanner) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-white dark:bg-gray-900 border-t shadow-lg">
