@@ -1,18 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable React strict mode for better development experience
+  // Enable React strict mode
   reactStrictMode: true,
 
   // Internationalization configuration
   i18n: {
     locales: ['en', 'ar', 'pt', 'pt-BR', 'es', 'fr', 'it', 'de'],
     defaultLocale: 'en',
-    // Note: localeDetection is false by default in Next.js 14
+    localeDetection: true,
   },
 
-  // Image optimization configuration
+  // Image optimization
   images: {
-    formats: ['image/webp'],
+    formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
@@ -25,7 +25,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Apply security headers to all routes
         source: '/:path*',
         headers: [
           {
@@ -61,34 +60,8 @@ const nextConfig = {
     ];
   },
 
-  // Redirects configuration
-  async redirects() {
-    return [
-      // Add any permanent redirects here
-      // Example:
-      // {
-      //   source: '/old-path',
-      //   destination: '/new-path',
-      //   permanent: true,
-      // },
-    ];
-  },
-
-  // Rewrites configuration (for API proxying if needed)
-  async rewrites() {
-    return [
-      // Add any rewrites here
-      // Example:
-      // {
-      //   source: '/api/:path*',
-      //   destination: 'https://api.example.com/:path*',
-      // },
-    ];
-  },
-
   // Compiler options
   compiler: {
-    // Remove console logs in production (except errors and warnings)
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
     } : false,
@@ -96,29 +69,18 @@ const nextConfig = {
 
   // Webpack configuration
   webpack: (config, { dev, isServer }) => {
-    // Production optimizations
     if (!dev && !isServer) {
-      // Replace React with Preact in production (optional - removes ~30KB)
-      // Uncomment if you want to use Preact
-      // Object.assign(config.resolve.alias, {
-      //   react: 'preact/compat',
-      //   'react-dom': 'preact/compat',
-      // });
-
-      // Optimize bundle splitting
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
           default: false,
           vendors: false,
-          // Vendor chunk for node_modules
           vendor: {
             name: 'vendor',
             chunks: 'all',
             test: /node_modules/,
             priority: 20,
           },
-          // Common chunk for shared code
           common: {
             name: 'common',
             minChunks: 2,
@@ -131,70 +93,46 @@ const nextConfig = {
       };
     }
 
-    // Bundle analyzer (uncomment to analyze bundle size)
-    // if (process.env.ANALYZE === 'true') {
-    //   const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-    //   config.plugins.push(
-    //     new BundleAnalyzerPlugin({
-    //       analyzerMode: 'static',
-    //       reportFilename: isServer
-    //         ? '../analyze/server.html'
-    //         : './analyze/client.html',
-    //       openAnalyzer: false,
-    //     })
-    //   );
-    // }
-
     return config;
   },
 
-  // Environment variables that should be available in the browser
+  // Environment variables
   env: {
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://tactec.club',
   },
 
   // Output configuration
-  output: 'standalone', // For optimal Docker/container deployments
+  output: 'standalone',
   
-  // Power profiling (useful for performance optimization)
-  // Uncomment to enable
-  // experimental: {
-  //   profiling: true,
-  // },
-
-  // Enable SWC minification (faster builds)
+  // Enable SWC minification
   swcMinify: true,
 
-  // Trailing slash configuration (disabled by default)
+  // Trailing slash configuration
   trailingSlash: false,
 
-  // ESLint configuration during builds
+  // ESLint configuration
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: false,
   },
 
-  // TypeScript configuration during builds
+  // TypeScript configuration
   typescript: {
-    // Warning: Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
     ignoreBuildErrors: false,
   },
 
-  // Production browser target
-  productionBrowserSourceMaps: false, // Set to true if you want source maps in production
+  // Production browser source maps
+  productionBrowserSourceMaps: false,
 
   // Compress pages
   compress: true,
 
-  // Generate etags for pages
+  // Generate etags
   generateEtags: true,
 
   // Page extensions
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
 
-  // Powered by header (removes "X-Powered-By: Next.js")
+  // Powered by header
   poweredByHeader: false,
 };
 
