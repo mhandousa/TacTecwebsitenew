@@ -1,7 +1,32 @@
 import { GA_TRACKING_ID } from '@/config/env';
 import { logger } from './logger';
 
-// ... rest of the file stays the same, but replace console.log with logger.debug
+// Strict event types
+export type AnalyticsEvent = 
+  | 'page_view'
+  | 'form_submit'
+  | 'form_submit_success'
+  | 'form_submit_error'
+  | 'demo_request'
+  | 'language_switch'
+  | 'cta_click'
+  | 'scroll_depth';
+
+// Strict event parameters
+export interface EventParams {
+  category?: string;
+  label?: string;
+  value?: number;
+  form_type?: string;
+  request_type?: string;
+  error?: string;
+  from_language?: string;
+  to_language?: string;
+  type?: string;
+  depth?: number;
+  club?: string;
+  [key: string]: string | number | boolean | undefined;
+}
 
 export const pageview = (url: string): void => {
   if (typeof window === 'undefined') return;
@@ -22,8 +47,8 @@ export const pageview = (url: string): void => {
 };
 
 export const trackEvent = (
-  event: AnalyticsEvent | string, 
-  params?: Record<string, any>
+  event: AnalyticsEvent,
+  params?: EventParams
 ): void => {
   if (typeof window === 'undefined') return;
 
@@ -40,4 +65,23 @@ export const trackEvent = (
   window.gtag('event', event, params || {});
 };
 
-// ... rest of the file
+// Helper functions
+export const trackLanguageSwitch = (fromLang: string, toLang: string): void => {
+  trackEvent('language_switch', {
+    from_language: fromLang,
+    to_language: toLang,
+  });
+};
+
+export const trackFormSubmit = (formType: string, requestType?: string): void => {
+  trackEvent('form_submit', {
+    form_type: formType,
+    request_type: requestType,
+  });
+};
+
+export const trackScrollDepth = (depth: number): void => {
+  trackEvent('scroll_depth', {
+    depth,
+  });
+};
