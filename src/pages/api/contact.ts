@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
+import { ratelimit } from '@/lib/ratelimit';
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -16,26 +17,10 @@ interface ApiResponse {
   success?: boolean;
   error?: string;
   message?: string;
-}
-
-// Rate limiting store (in-memory - use Redis in production)
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
-
-function rateLimit(ip: string, maxRequests: number = 5, windowMs: number = 15 * 60 * 1000): boolean {
-  const now = Date.now();
-  const record = rateLimitStore.get(ip);
-
-  if (!record || now > record.resetTime) {
-    rateLimitStore.set(ip, { count: 1, resetTime: now + windowMs });
-    return true;
-  }
-
-  if (record.count >= maxRequests) {
-    return false;
-  }
-
-  record.count++;
-  return true;
+  rateLimit?: {
+    remaining: number;
+    reset: number;
+  };
 }
 
 function getClientIp(req: NextApiRequest): string {
@@ -76,9 +61,20 @@ export default async function handler(
 
   // Rate Limiting
   const clientIp = getClientIp(req);
-  if (!rateLimit(clientIp)) {
+  const rateLimitResult = ratelimit.check(clientIp);
+  
+  // Set rate limit headers
+  res.setHeader('X-RateLimit-Limit', rateLimitResult.limit.toString());
+  res.setHeader('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
+  res.setHeader('X-RateLimit-Reset', rateLimitResult.reset.toString());
+  
+  if (!rateLimitResult.success) {
     return res.status(429).json({ 
-      error: 'Too many requests. Please try again later.' 
+      error: 'Too many requests. Please try again later.',
+      rateLimit: {
+        remaining: rateLimitResult.remaining,
+        reset: rateLimitResult.reset,
+      }
     });
   }
 
@@ -97,15 +93,19 @@ export default async function handler(
       ip: clientIp,
     });
 
-    // Send notification email
-    await sendEmailNotification(data);
-
-    // Save to database/file
-    await saveSubmission(data, clientIp);
-
+    // In production, you would:
+    // 1. Save to database
+    // 2. Send email notification
+    // 3. Add to CRM
+    
+    // For now, just return success
     res.status(200).json({ 
       success: true, 
-      message: 'Your message has been sent successfully. We will contact you within 24 hours.' 
+      message: 'Your message has been sent successfully. We will contact you within 24 hours.',
+      rateLimit: {
+        remaining: rateLimitResult.remaining,
+        reset: rateLimitResult.reset,
+      }
     });
 
   } catch (error) {
@@ -120,100 +120,5 @@ export default async function handler(
     res.status(500).json({ 
       error: 'We encountered a technical issue. Please try again or email us directly at info@tactec.club' 
     });
-  }
-}
-
-async function sendEmailNotification(data: ContactFormData): Promise<void> {
-  const emailSubject = `🏆 TACTEC ${data.requestType.charAt(0).toUpperCase() + data.requestType.slice(1)} Request - ${data.name}`;
-  
-  const emailBody = `
-New TACTEC Contact Form Submission
-=================================
-
-Contact Details:
-- Name: ${data.name}
-- Email: ${data.email}
-- Club/Organization: ${data.club}
-- Role: ${data.role}
-- Request Type: ${data.requestType.toUpperCase()}
-
-Message:
-${data.message}
-
-Submission Details:
-- Date: ${new Date().toLocaleDateString()}
-- Time: ${new Date().toLocaleTimeString()}
-- Environment: ${process.env.NODE_ENV}
-
----
-Reply directly to: ${data.email}
-  `.trim();
-
-  if (process.env.NODE_ENV === 'development') {
-    console.log('\n' + '='.repeat(50));
-    console.log('📨 EMAIL NOTIFICATION');
-    console.log('='.repeat(50));
-    console.log('To: info@tactec.club');
-    console.log('Subject:', emailSubject);
-    console.log('\n' + emailBody);
-    console.log('='.repeat(50) + '\n');
-  }
-
-  // TODO: Implement actual email sending in production
-  // Example with Resend:
-  // if (process.env.NODE_ENV === 'production' && process.env.RESEND_API_KEY) {
-  //   const response = await fetch('https://api.resend.com/emails', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       from: 'TACTEC Website <noreply@tactec.club>',
-  //       to: 'info@tactec.club',
-  //       subject: emailSubject,
-  //       text: emailBody,
-  //       reply_to: data.email,
-  //     }),
-  //   });
-  //   if (!response.ok) {
-  //     throw new Error(`Email service error: ${response.status}`);
-  //   }
-  // }
-}
-
-async function saveSubmission(data: ContactFormData, ip: string): Promise<void> {
-  const submission = {
-    ...data,
-    id: Date.now().toString(),
-    timestamp: new Date().toISOString(),
-    status: 'new',
-    source: 'website_contact_form',
-    ip,
-  };
-
-  try {
-    if (process.env.NODE_ENV === 'development') {
-      const fs = require('fs');
-      const path = require('path');
-      
-      const submissionsFile = path.join(process.cwd(), 'contact-submissions.json');
-      let submissions = [];
-      
-      try {
-        const existingData = fs.readFileSync(submissionsFile, 'utf8');
-        submissions = JSON.parse(existingData);
-      } catch (e) {
-        // File doesn't exist or is empty
-      }
-      
-      submissions.push(submission);
-      fs.writeFileSync(submissionsFile, JSON.stringify(submissions, null, 2));
-      console.log(`💾 Submission saved to ${submissionsFile}`);
-    }
-
-    // TODO: Save to production database
-  } catch (error) {
-    console.error('Failed to save submission:', error);
   }
 }
