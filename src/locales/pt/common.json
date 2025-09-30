@@ -7,7 +7,9 @@
     "tech": "Tecnologia",
     "pricing": "Preços",
     "contact": "Contacto",
-    "signin": "Iniciar Sessão"
+    "signin": "Iniciar Sessão",
+    "menu": "Abrir menu",
+    "close": "Fechar menu"
   },
   "hero": {
     "trusted": "Confiado por clubes e profissionais",

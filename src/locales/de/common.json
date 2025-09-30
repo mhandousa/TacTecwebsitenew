@@ -7,7 +7,9 @@
     "tech": "Technologie",
     "pricing": "Preise",
     "contact": "Kontakt",
-    "signin": "Anmelden"
+    "signin": "Anmelden",
+    "menu": "Menü öffnen",
+    "close": "Menü schließen"
   },
   "hero": {
     "trusted": "Vertraut von Vereinen und Mitarbeitern",
