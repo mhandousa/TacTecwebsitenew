@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Environment variables
+.env*
+!.env_example
+
+# Logs and diagnostics
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / Editor folders
+.DS_Store
+.idea/
+.vscode/
+
+# Coverage and test artifacts
+coverage/
+
