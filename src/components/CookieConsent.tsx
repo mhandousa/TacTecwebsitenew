@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useTranslations } from 'next-intl';
 
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
-  const t = useTranslations();
 
   // First mount check
   useEffect(() => {
