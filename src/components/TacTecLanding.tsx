@@ -51,8 +51,9 @@ export default function TacTecLanding() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-20">
+      <main id="content">
+        {/* Hero Section */}
+        <section className="relative bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-20">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-sky-600 font-semibold mb-4">{t('hero.trusted')}</p>
@@ -94,10 +95,10 @@ export default function TacTecLanding() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Challenge Section */}
-      <section id="challenge" className="py-20 bg-white dark:bg-gray-900">
+        {/* Challenge Section */}
+        <section id="challenge" className="py-20 bg-white dark:bg-gray-900">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <p className="text-sky-600 font-semibold mb-4">{t('challenge.eyebrow')}</p>
@@ -127,10 +128,10 @@ export default function TacTecLanding() {
             />
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Solution Section */}
-      <section id="solution" className="py-20 bg-gray-50 dark:bg-gray-800">
+        {/* Solution Section */}
+        <section id="solution" className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-sky-600 font-semibold mb-4">{t('solution.eyebrow')}</p>
@@ -138,10 +139,10 @@ export default function TacTecLanding() {
             <p className="text-xl text-gray-600 dark:text-gray-400">{t('solution.subtitle')}</p>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-white dark:bg-gray-900">
+        {/* Features Section */}
+        <section id="features" className="py-20 bg-white dark:bg-gray-900">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-sky-600 font-semibold mb-4">{t('features.eyebrow')}</p>
@@ -149,10 +150,10 @@ export default function TacTecLanding() {
             <p className="text-xl text-gray-600 dark:text-gray-400">{t('features.subtitle')}</p>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Tech Section */}
-      <section id="tech" className="py-20 bg-gray-50 dark:bg-gray-800">
+        {/* Tech Section */}
+        <section id="tech" className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-sky-600 font-semibold mb-4">{t('tech.eyebrow')}</p>
@@ -160,10 +161,10 @@ export default function TacTecLanding() {
             <p className="text-xl text-gray-600 dark:text-gray-400">{t('tech.subtitle')}</p>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* CTA Section */}
-      <section id="demo" className="py-20 bg-sky-600 text-white">
+        {/* CTA Section */}
+        <section id="demo" className="py-20 bg-sky-600 text-white">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <p className="font-semibold mb-4">{t('cta.eyebrow')}</p>
@@ -180,7 +181,8 @@ export default function TacTecLanding() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      </main>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-12">

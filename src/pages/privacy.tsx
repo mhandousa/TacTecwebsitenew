@@ -39,7 +39,10 @@ export default function PrivacyPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+      <main
+        id="content"
+        className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
+      >
         <div className="container mx-auto px-6 py-16">
           <div className="max-w-4xl mx-auto prose prose-lg dark:prose-invert">
             <h1>Privacy Policy</h1>
