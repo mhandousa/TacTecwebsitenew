@@ -112,8 +112,10 @@ export async function loadLocaleMessages(context: GetStaticPropsContext) {
       
       console.log(`✅ Successfully loaded messages for locale: ${locale}`);
     } catch (localeError) {
-      console.warn(`⚠️ Failed to load locale ${locale}:`, localeError.message);
-      
+      const localeErrorMessage =
+        localeError instanceof Error ? localeError.message : String(localeError);
+      console.warn(`⚠️ Failed to load locale ${locale}:`, localeErrorMessage);
+
       try {
         // Fall back to English
         const fallbackContent = fs.readFileSync(fallbackPath, "utf-8");
@@ -125,8 +127,10 @@ export async function loadLocaleMessages(context: GetStaticPropsContext) {
         
         console.log(`✅ Loaded English fallback for locale: ${locale}`);
       } catch (fallbackError) {
-        console.error("❌ Failed to load English fallback:", fallbackError.message);
-        
+        const fallbackErrorMessage =
+          fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+        console.error("❌ Failed to load English fallback:", fallbackErrorMessage);
+
         // Use hardcoded default messages
         messages = getDefaultMessages();
         console.log(`✅ Using default messages for locale: ${locale}`);
