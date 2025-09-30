@@ -3,6 +3,8 @@ import Link from "next/link";
 import { SITE_URL } from "@/config/env";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
+const PRIVACY_LAST_UPDATED = "January 15, 2024";
+
 export default function PrivacyPage() {
   return (
     <>
@@ -49,11 +51,7 @@ export default function PrivacyPage() {
             <h1>Privacy Policy</h1>
             <p className="text-gray-600 dark:text-gray-400">
               <strong>Last Updated:</strong>{" "}
-              {new Date().toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
+              {PRIVACY_LAST_UPDATED}
             </p>
 
             <h2>1. Introduction</h2>

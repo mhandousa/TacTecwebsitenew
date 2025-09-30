@@ -1,15 +1,34 @@
 {
+  "layout": {
+    "skip": "Skip to main content"
+  },
   "nav": {
     "club_os": "Club OS",
     "challenge": "Challenge",
     "solution": "Solution",
     "features": "Features",
     "tech": "Technology",
+    "caseStudies": "Case Studies",
     "pricing": "Pricing",
     "contact": "Contact",
     "signin": "Sign In",
     "menu": "Open menu",
     "close": "Close menu"
+  },
+  "languageSwitcher": {
+    "label": "Language selection",
+    "current": "Current language: {locale}. Activate to change language.",
+    "switchTo": "Switch to {locale}. {description}",
+    "remembered": "Saved. We'll remember {locale} next visit.",
+    "coverageNote": "Coverage reflects the experience currently available in each language.",
+    "status": {
+      "full": "Full",
+      "beta": "Beta"
+    },
+    "coverage": {
+      "fullProduct": "Full product experience with support and onboarding.",
+      "corePages": "Core marketing pages translated. Product modules in progress."
+    }
   },
   "hero": {
     "trusted": "Trusted by clubs and staff",
@@ -18,11 +37,22 @@
     "subtitle": "TACTEC unifies sport science, medical, tactical and operations into one clean platform for every department.",
     "cta": {
       "start": "Get Started",
-      "demo": "Request Demo"
+      "demo": "Request Demo",
+      "learn": "Explore Capabilities"
     },
     "stats": {
-      "injury": "Fewer soft tissue injuries",
-      "sync": "Faster data sync"
+      "injury": {
+        "value": "32%",
+        "label": "Fewer soft tissue injuries"
+      },
+      "sync": {
+        "value": "4x",
+        "label": "Faster data sync"
+      },
+      "adoption": {
+        "value": "12 days",
+        "label": "Average onboarding time"
+      }
     }
   },
   "challenge": {
@@ -47,17 +77,139 @@
   "solution": {
     "eyebrow": "The Solution",
     "title": "One Operating System for Your Club",
-    "subtitle": "Bring people, processes, and performance together with TACTEC."
+    "subtitle": "Bring people, processes, and performance together with TACTEC.",
+    "pillars": {
+      "connect": {
+        "title": "Connect every department",
+        "desc": "Unify coaching, medical, performance, and operations data in a single timeline."
+      },
+      "coordinate": {
+        "title": "Coordinate smarter workflows",
+        "desc": "Automate approvals, wellness checks, and match planning without leaving the platform."
+      },
+      "measure": {
+        "title": "Measure what matters",
+        "desc": "Dashboards highlight readiness, injury risk, and training loads in real time."
+      }
+    },
+    "outcome": {
+      "title": "Designed for elite environments",
+      "items": {
+        "clarity": "Shared context for coaches, analysts, medics, and players.",
+        "speed": "Minutes saved daily on reporting and approvals.",
+        "confidence": "Decision support backed by live data and video."
+      }
+    }
   },
   "features": {
     "eyebrow": "Core Features",
     "title": "Everything Your Staff Needs",
-    "subtitle": "Team management, tactical boards, wellness & medical, reporting and more."
+    "subtitle": "Team management, tactical boards, wellness & medical, reporting and more.",
+    "categories": {
+      "medical": {
+        "title": "Integrated medical hub",
+        "desc": "Treatment notes, injury history, and rehab protocols connected to daily availability."
+      },
+      "performance": {
+        "title": "Performance intelligence",
+        "desc": "Track external and internal loads with automated readiness scoring."
+      },
+      "tactical": {
+        "title": "Immersive tactical tools",
+        "desc": "Interactive match plans, player tasks, and live session visualisation."
+      },
+      "operations": {
+        "title": "Club operations",
+        "desc": "Travel, equipment, and compliance managed with configurable workflows."
+      }
+    },
+    "highlights": {
+      "title": "Why clubs choose TACTEC",
+      "items": {
+        "mobile": "Native player and staff apps in 8 languages.",
+        "security": "Enterprise-grade roles, permissions, and audit logs.",
+        "support": "White-glove onboarding with football specialists."
+      }
+    }
   },
   "tech": {
     "eyebrow": "Technology",
     "title": "Clean Architecture. Cross-Platform. Fast.",
-    "subtitle": "Modern stack, universal design, and a powerful graphics engine."
+    "subtitle": "Modern stack, universal design, and a powerful graphics engine.",
+    "pillars": {
+      "cloud": {
+        "title": "Secure cloud infrastructure",
+        "desc": "Hosted in EU data centres with automated backups and encryption."
+      },
+      "analytics": {
+        "title": "Analytics-ready data",
+        "desc": "Well-defined APIs feed BI tools and scouting platforms effortlessly."
+      },
+      "access": {
+        "title": "Accessible everywhere",
+        "desc": "Responsive web, mobile apps, and offline capture for travel days."
+      }
+    }
+  },
+  "metrics": {
+    "title": "Operational gains delivered",
+    "subtitle": "TACTEC helps clubs reclaim time and improve player care from day one.",
+    "items": {
+      "satisfaction": {
+        "value": "96%",
+        "label": "Staff satisfaction",
+        "desc": "Teams report higher clarity in daily schedules."
+      },
+      "reporting": {
+        "value": "18 hrs",
+        "label": "Reporting saved weekly",
+        "desc": "Automated dashboards replace manual spreadsheet updates."
+      },
+      "recovery": {
+        "value": "40%",
+        "label": "Faster return-to-play decisions",
+        "desc": "Unified medical notes accelerate interdisciplinary sign-off."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Trusted by progressive clubs",
+    "subtitle": "Leaders across leagues rely on TACTEC to unite staff and unlock performance.",
+    "quotes": {
+      "director": {
+        "quote": "TACTEC finally gives our staff a single version of truth. Training loads, rehab, and match prep now live together.",
+        "role": "Performance Director, European Top Flight"
+      },
+      "coach": {
+        "quote": "We move from training ground to match day with the same workflows. Staff actually enjoys updating the platform.",
+        "role": "First Team Coach, Championship Club"
+      }
+    }
+  },
+  "caseStudies": {
+    "eyebrow": "Club Stories",
+    "title": "Proven impact across every department",
+    "subtitle": "Explore how different squads modernise their operations with TACTEC.",
+    "cards": {
+      "academy": {
+        "sector": "Academy",
+        "title": "Regional academy unifies player care",
+        "summary": "Centralised wellness checks, treatment notes, and education plans for six age groups.",
+        "result": "6 hrs saved weekly"
+      },
+      "firstTeam": {
+        "sector": "First Team",
+        "title": "Elite club accelerates match readiness",
+        "summary": "Medical, performance, and tactical teams collaborate on a single availability board.",
+        "result": "32% faster sign-off"
+      },
+      "women": {
+        "sector": "Women's Football",
+        "title": "Women's side scales travel and logistics",
+        "summary": "Automated itineraries and equipment workflows keep staff synced across continents.",
+        "result": "Zero missed approvals"
+      }
+    }
   },
   "cta": {
     "eyebrow": "Next Step",
@@ -65,7 +217,8 @@
     "subtitle": "Request a live demo or try the player app.",
     "buttons": {
       "demo": "Request Live Demo",
-      "app": "Try Player App"
+      "app": "Try Player App",
+      "tour": "Download Product Overview"
     }
   },
   "footer": {
@@ -73,7 +226,10 @@
     "product": "Product: TACTEC",
     "company": "Company: Ventio",
     "rights": "© Ventio. All rights reserved.",
-    "made": "Made with care for football."
+    "made": "Made with care for football.",
+    "resources": {
+      "productOverview": "Product overview (PDF)"
+    }
   },
   "faq": {
     "q1": "What is TACTEC?",
@@ -138,6 +294,10 @@
       "apiDefaults": {
         "success": "Your message has been sent successfully!",
         "error": "Failed to send message"
+      },
+      "announcement": {
+        "success": "Contact form submitted successfully.",
+        "error": "Contact form submission failed."
       }
     },
     "info": {

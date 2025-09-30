@@ -205,13 +205,21 @@ export default function ContactPage() {
             {submitStatus !== "idle" && (
               <div
                 id="form-status"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
                 className={`mb-8 p-4 rounded-lg ${
                   submitStatus === "success"
                     ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                     : "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
                 }`}
               >
-                {submitMessage}
+                <span className="sr-only">
+                  {submitStatus === "success"
+                    ? t("status.announcement.success")
+                    : t("status.announcement.error")}
+                </span>
+                <span aria-hidden="true">{submitMessage}</span>
               </div>
             )}
 
@@ -220,12 +228,20 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Request Type */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    htmlFor="contact-request-type"
+                  >
                     {t("form.requestType.label")}
                   </label>
                   <select
+                    id="contact-request-type"
                     {...register("requestType")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    aria-invalid={errors.requestType ? "true" : "false"}
+                    aria-describedby={
+                      errors.requestType ? "contact-request-type-error" : undefined
+                    }
                   >
                     <option value="demo">
                       {t("form.requestType.options.demo")}
@@ -241,7 +257,10 @@ export default function ContactPage() {
                     </option>
                   </select>
                   {errors.requestType && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p
+                      id="contact-request-type-error"
+                      className="mt-1 text-sm text-red-600"
+                    >
                       {errors.requestType.message}
                     </p>
                   )}
@@ -249,17 +268,24 @@ export default function ContactPage() {
 
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    htmlFor="contact-name"
+                  >
                     {t("form.name.label")}
                   </label>
                   <input
                     type="text"
+                    id="contact-name"
                     {...register("name")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                     placeholder={t("form.name.placeholder")}
+                    autoComplete="name"
+                    aria-invalid={errors.name ? "true" : "false"}
+                    aria-describedby={errors.name ? "contact-name-error" : undefined}
                   />
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p id="contact-name-error" className="mt-1 text-sm text-red-600">
                       {errors.name.message}
                     </p>
                   )}
@@ -267,17 +293,24 @@ export default function ContactPage() {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    htmlFor="contact-email"
+                  >
                     {t("form.email.label")}
                   </label>
                   <input
                     type="email"
+                    id="contact-email"
                     {...register("email")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                     placeholder={t("form.email.placeholder")}
+                    autoComplete="email"
+                    aria-invalid={errors.email ? "true" : "false"}
+                    aria-describedby={errors.email ? "contact-email-error" : undefined}
                   />
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p id="contact-email-error" className="mt-1 text-sm text-red-600">
                       {errors.email.message}
                     </p>
                   )}
@@ -285,17 +318,24 @@ export default function ContactPage() {
 
                 {/* Club */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    htmlFor="contact-club"
+                  >
                     {t("form.club.label")}
                   </label>
                   <input
                     type="text"
+                    id="contact-club"
                     {...register("club")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                     placeholder={t("form.club.placeholder")}
+                    autoComplete="organization"
+                    aria-invalid={errors.club ? "true" : "false"}
+                    aria-describedby={errors.club ? "contact-club-error" : undefined}
                   />
                   {errors.club && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p id="contact-club-error" className="mt-1 text-sm text-red-600">
                       {errors.club.message}
                     </p>
                   )}
@@ -303,17 +343,24 @@ export default function ContactPage() {
 
                 {/* Role */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    htmlFor="contact-role"
+                  >
                     {t("form.role.label")}
                   </label>
                   <input
                     type="text"
+                    id="contact-role"
                     {...register("role")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                     placeholder={t("form.role.placeholder")}
+                    autoComplete="organization-title"
+                    aria-invalid={errors.role ? "true" : "false"}
+                    aria-describedby={errors.role ? "contact-role-error" : undefined}
                   />
                   {errors.role && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p id="contact-role-error" className="mt-1 text-sm text-red-600">
                       {errors.role.message}
                     </p>
                   )}
@@ -321,17 +368,26 @@ export default function ContactPage() {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    htmlFor="contact-message"
+                  >
                     {t("form.message.label")}
                   </label>
                   <textarea
                     {...register("message")}
                     rows={6}
+                    id="contact-message"
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
                     placeholder={t("form.message.placeholder")}
+                    autoComplete="off"
+                    aria-invalid={errors.message ? "true" : "false"}
+                    aria-describedby={
+                      errors.message ? "contact-message-error" : undefined
+                    }
                   />
                   {errors.message && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p id="contact-message-error" className="mt-1 text-sm text-red-600">
                       {errors.message.message}
                     </p>
                   )}
