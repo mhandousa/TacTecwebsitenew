@@ -36,29 +36,129 @@ function normalizeIp(ip: string | undefined | null): string | null {
     return null;
   }
 
-  // Handle IPv6 mapped IPv4 addresses (e.g. ::ffff:127.0.0.1)
-  const mappedMatch = ip.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-  if (mappedMatch) {
-    return mappedMatch[1];
+  let candidate = ip.trim().replace(/^"|"$/g, '');
+  if (!candidate) {
+    return null;
   }
 
-  return ip;
+  const zoneIndex = candidate.indexOf('%');
+  if (zoneIndex !== -1) {
+    candidate = candidate.slice(0, zoneIndex);
+  }
+
+  if (candidate.startsWith('[')) {
+    const closingIndex = candidate.indexOf(']');
+    if (closingIndex !== -1) {
+      candidate = candidate.slice(1, closingIndex);
+    }
+  }
+
+  const mappedMatch = candidate.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i);
+  if (mappedMatch) {
+    candidate = mappedMatch[1];
+  }
+
+  if (candidate.includes('.') && candidate.includes(':')) {
+    const lastColon = candidate.lastIndexOf(':');
+    const potential = candidate.slice(0, lastColon);
+    if (isIP(potential)) {
+      candidate = potential;
+    }
+  }
+
+  const portMatch = candidate.match(/^(.*):(\d+)$/);
+  if (portMatch && isIP(portMatch[1])) {
+    candidate = portMatch[1];
+  }
+
+  if (!isIP(candidate)) {
+    return null;
+  }
+
+  return candidate;
 }
 
-function getTrustedProxies(): Set<string> {
-  const raw = process.env.TRUSTED_PROXY_IPS;
-  const defaults = ['127.0.0.1', '::1'];
+let cachedTrustedProxies: Set<string> | null = null;
+let loggedProxyWarning = false;
 
-  if (!raw) {
-    return new Set(defaults);
+function getTrustedProxies(): Set<string> {
+  if (cachedTrustedProxies) {
+    return cachedTrustedProxies;
   }
 
-  return new Set(
-    raw
-      .split(',')
-      .map(value => normalizeIp(value.trim()))
-      .filter((value): value is string => Boolean(value)),
-  );
+  const defaults = ['127.0.0.1', '::1'];
+  const configured = process.env.TRUSTED_PROXY_IPS?.split(',') ?? [];
+  const invalidEntries: string[] = [];
+
+  const proxies = new Set<string>();
+  [...defaults, ...configured].forEach(value => {
+    const normalized = normalizeIp(value);
+    if (normalized) {
+      proxies.add(normalized);
+    } else if (value && value.trim()) {
+      invalidEntries.push(value.trim());
+    }
+  });
+
+  if (invalidEntries.length > 0 && !loggedProxyWarning) {
+    console.warn(
+      `Ignoring invalid TRUSTED_PROXY_IPS entries: ${invalidEntries.join(', ')}`,
+    );
+    loggedProxyWarning = true;
+  }
+
+  cachedTrustedProxies = proxies;
+  return proxies;
+}
+
+function parseForwardedHeader(value: string): string[] {
+  return value
+    .split(',')
+    .map(part => part.trim())
+    .map(part => {
+      const match = part.match(/for=(?:"?)([^;",]+)(?:"?)/i);
+      return match?.[1];
+    })
+    .filter((forwarded): forwarded is string => Boolean(forwarded));
+}
+
+function getForwardedCandidates(req: NextApiRequest): string[] {
+  const candidates: string[] = [];
+  const forwardedFor = req.headers['x-forwarded-for'];
+
+  if (typeof forwardedFor === 'string') {
+    candidates.push(...forwardedFor.split(',').map(ip => ip.trim()));
+  } else if (Array.isArray(forwardedFor)) {
+    forwardedFor.forEach(value => {
+      candidates.push(...value.split(',').map(ip => ip.trim()));
+    });
+  }
+
+  const forwarded = req.headers.forwarded;
+  if (forwarded) {
+    const values = Array.isArray(forwarded) ? forwarded : [forwarded];
+    values.forEach(value => {
+      candidates.push(...parseForwardedHeader(value));
+    });
+  }
+
+  const singleValueHeaders = [
+    'x-real-ip',
+    'cf-connecting-ip',
+    'true-client-ip',
+    'x-client-ip',
+  ] as const;
+
+  singleValueHeaders.forEach(header => {
+    const value = req.headers[header];
+    if (typeof value === 'string') {
+      candidates.push(value);
+    } else if (Array.isArray(value)) {
+      candidates.push(...value);
+    }
+  });
+
+  return candidates;
 }
 
 function getClientIp(req: NextApiRequest): string {
@@ -66,23 +166,11 @@ function getClientIp(req: NextApiRequest): string {
   const remoteAddress = normalizeIp(req.socket.remoteAddress);
 
   if (remoteAddress && trustedProxies.has(remoteAddress)) {
-    const forwarded = req.headers['x-forwarded-for'];
-    const candidates: string[] = [];
-
-    if (typeof forwarded === 'string') {
-      candidates.push(...forwarded.split(',').map(ip => ip.trim()));
-    } else if (Array.isArray(forwarded)) {
-      candidates.push(...forwarded.flatMap(value => value.split(',')).map(ip => ip.trim()));
-    }
-
-    const realIp = candidates.find(ip => isIP(ip));
-    if (realIp) {
-      return normalizeIp(realIp) ?? 'unknown';
-    }
-
-    const realIpHeader = normalizeIp(Array.isArray(req.headers['x-real-ip']) ? req.headers['x-real-ip'][0] : req.headers['x-real-ip']);
-    if (realIpHeader) {
-      return realIpHeader;
+    for (const candidate of getForwardedCandidates(req)) {
+      const normalized = normalizeIp(candidate);
+      if (normalized) {
+        return normalized;
+      }
     }
   }
 
@@ -93,21 +181,50 @@ function getClientIp(req: NextApiRequest): string {
   return 'unknown';
 }
 
+function buildAllowedOrigins(): Set<string> {
+  const defaults = [
+    'https://tactec.club',
+    'https://www.tactec.club',
+  ];
+
+  const additional = process.env.CONTACT_API_ALLOWED_ORIGINS?.split(',') ?? [];
+  const origins = new Set<string>();
+
+  const register = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    try {
+      const parsed = new URL(trimmed);
+      origins.add(parsed.origin.toLowerCase());
+    } catch (error) {
+      console.warn(`Ignoring invalid CONTACT_API_ALLOWED_ORIGINS entry: ${trimmed}`);
+    }
+  };
+
+  [...defaults, ...additional].forEach(register);
+
+  if (process.env.NODE_ENV !== 'production') {
+    ['http://localhost:3000', 'http://127.0.0.1:3000'].forEach(register);
+  }
+
+  return origins;
+}
+
+const allowedOrigins = buildAllowedOrigins();
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>
 ) {
   // CORS Configuration
-  const allowedOrigins = [
-    'https://tactec.club',
-    'https://www.tactec.club',
-    ...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000'] : [])
-  ];
+  const requestOrigin = req.headers.origin;
+  const normalizedOrigin = requestOrigin?.toLowerCase();
 
-  const origin = req.headers.origin;
-  
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
+  if (requestOrigin && normalizedOrigin && allowedOrigins.has(normalizedOrigin)) {
+    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
   }
 
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

@@ -80,6 +80,7 @@ class UpstashHttpRateLimiter implements RateLimiterStrategy {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(args),
+      signal: AbortSignal.timeout(5000),
     });
 
     if (!response.ok) {

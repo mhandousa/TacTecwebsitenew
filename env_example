@@ -61,6 +61,10 @@ NEXT_PUBLIC_ERROR_ENDPOINT=
 # Example: TRUSTED_PROXY_IPS=127.0.0.1,10.0.0.5
 TRUSTED_PROXY_IPS=127.0.0.1,::1
 
+# Optional: comma separated list of additional origins allowed to call the contact API
+# Example: CONTACT_API_ALLOWED_ORIGINS=https://preview.tactec.club,https://partners.example
+CONTACT_API_ALLOWED_ORIGINS=
+
 # Upstash Redis REST credentials for durable rate limiting
 # Set both values to enable persistent rate limiting across deployments
 UPSTASH_REDIS_REST_URL=
