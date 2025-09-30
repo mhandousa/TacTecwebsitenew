@@ -93,7 +93,6 @@ export default function LanguageSwitcher() {
               <Link
                 key={l.code}
                 href={{ pathname, query }}
-                as={asPath}
                 locale={l.code}
                 onClick={() => handleLanguageChange(l.code)}
                 className={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
@@ -118,10 +117,9 @@ export default function LanguageSwitcher() {
         aria-label="Language selection"
       >
         {locales.map(l => (
-          <Link 
-            key={l.code} 
-            href={{ pathname, query }} 
-            as={asPath} 
+          <Link
+            key={l.code}
+            href={{ pathname, query }}
             locale={l.code}
             onClick={() => handleLanguageChange(l.code)}
             className={`px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors ${
