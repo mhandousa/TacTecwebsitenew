@@ -82,5 +82,84 @@
     "a2": "Sim. A interface suporta Árabe, Português (EU), Português do Brasil, Espanhol, Francês, Italiano, Alemão e Inglês.",
     "q3": "Como começar?",
     "a3": "Contacte-nos para uma demonstração ao vivo e um plano de integração."
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact - TACTEC",
+      "description": "Get in touch with TACTEC team for demos and inquiries. Transform your football club operations with our professional platform.",
+      "ogTitle": "Contact TACTEC - Football Club Management Platform",
+      "ogDescription": "Request a demo or get in touch with our team to learn how TACTEC can transform your club operations."
+    },
+    "nav": {
+      "back": "← Back to Home"
+    },
+    "header": {
+      "title": "Get in Touch",
+      "subtitle": "Ready to transform your club? Request a demo or contact our team."
+    },
+    "form": {
+      "requestType": {
+        "label": "Request Type *",
+        "options": {
+          "demo": "Request Demo",
+          "sales": "Sales Inquiry",
+          "support": "Support",
+          "general": "General Question"
+        }
+      },
+      "name": {
+        "label": "Your Name *",
+        "placeholder": "John Doe"
+      },
+      "email": {
+        "label": "Email Address *",
+        "placeholder": "john@club.com"
+      },
+      "club": {
+        "label": "Club/Organization *",
+        "placeholder": "FC Example"
+      },
+      "role": {
+        "label": "Your Role *",
+        "placeholder": "Manager, Coach, Director, etc."
+      },
+      "message": {
+        "label": "Message *",
+        "placeholder": "Tell us about your needs..."
+      },
+      "submit": {
+        "default": "Send Message",
+        "loading": "Sending..."
+      }
+    },
+    "status": {
+      "success": "Your message has been sent successfully!",
+      "error": "Something went wrong. Please try again or email us directly.",
+      "apiDefaults": {
+        "success": "Your message has been sent successfully!",
+        "error": "Failed to send message"
+      }
+    },
+    "info": {
+      "email": {
+        "label": "Email",
+        "value": "info@tactec.club"
+      },
+      "response": {
+        "label": "Response Time",
+        "value": "Within 24 hours"
+      },
+      "languages": {
+        "label": "Languages",
+        "value": "8 languages supported"
+      }
+    },
+    "validation": {
+      "nameMin": "Name must be at least 2 characters",
+      "email": "Please enter a valid email address",
+      "clubMin": "Club name must be at least 2 characters",
+      "roleMin": "Please select your role",
+      "messageMin": "Message must be at least 10 characters"
+    }
   }
 }
