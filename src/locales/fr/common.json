@@ -65,7 +65,8 @@
     "subtitle": "Demandez une démo en direct ou essayez l'application joueur.",
     "buttons": {
       "demo": "Demander une Démo en Direct",
-      "app": "Essayer l'App Joueur"
+      "app": "Essayer l'App Joueur",
+      "tour": "Télécharger la Présentation du Produit"
     }
   },
   "footer": {

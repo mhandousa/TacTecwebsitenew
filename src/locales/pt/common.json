@@ -65,7 +65,8 @@
     "subtitle": "Solicite uma demonstração ao vivo ou experimente a aplicação do jogador.",
     "buttons": {
       "demo": "Solicitar Demonstração",
-      "app": "Experimentar App do Jogador"
+      "app": "Experimentar App do Jogador",
+      "tour": "Descarregar Visão Geral do Produto"
     }
   },
   "footer": {

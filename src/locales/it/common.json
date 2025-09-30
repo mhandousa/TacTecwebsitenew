@@ -65,7 +65,8 @@
     "subtitle": "Richiedi una demo dal vivo o prova l'app per giocatori.",
     "buttons": {
       "demo": "Richiedi Demo dal Vivo",
-      "app": "Prova l'App del Giocatore"
+      "app": "Prova l'App del Giocatore",
+      "tour": "Scarica la Panoramica del Prodotto"
     }
   },
   "footer": {
