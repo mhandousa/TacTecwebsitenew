@@ -53,3 +53,15 @@ NEXT_PUBLIC_ERROR_ENDPOINT=
 
 # Set to 'true' to test error reporting
 # TEST_ERROR_REPORTING=false
+
+# --------------------------------------------
+# Infrastructure
+# --------------------------------------------
+# Comma separated list of proxy IPs that are allowed to forward client addresses
+# Example: TRUSTED_PROXY_IPS=127.0.0.1,10.0.0.5
+TRUSTED_PROXY_IPS=127.0.0.1,::1
+
+# Upstash Redis REST credentials for durable rate limiting
+# Set both values to enable persistent rate limiting across deployments
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
