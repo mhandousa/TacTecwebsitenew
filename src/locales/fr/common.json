@@ -1,4 +1,7 @@
 {
+  "layout": {
+    "skip": "Aller au contenu principal"
+  },
   "nav": {
     "club_os": "Système du Club",
     "challenge": "Défi",
@@ -18,11 +21,22 @@
     "subtitle": "TACTEC unifie la science du sport, le médical, le tactique et les opérations dans une seule plateforme claire pour chaque département.",
     "cta": {
       "start": "Commencer",
-      "demo": "Demander une Démo"
+      "demo": "Demander une Démo",
+      "learn": "Découvrir les capacités"
     },
     "stats": {
-      "injury": "Moins de blessures des tissus mous",
-      "sync": "Synchronisation des données plus rapide"
+      "injury": {
+        "value": "32%",
+        "label": "Moins de blessures des tissus mous"
+      },
+      "sync": {
+        "value": "4x",
+        "label": "Synchronisation des données plus rapide"
+      },
+      "adoption": {
+        "value": "12 jours",
+        "label": "Temps moyen d'intégration"
+      }
     }
   },
   "challenge": {
@@ -47,17 +61,79 @@
   "solution": {
     "eyebrow": "La Solution",
     "title": "Un système d'exploitation pour votre club",
-    "subtitle": "Rassemblez les personnes, les processus et les performances avec TACTEC."
+    "subtitle": "Rassemblez les personnes, les processus et les performances avec TACTEC.",
+    "pillars": {
+      "connect": {
+        "title": "Connect every department",
+        "desc": "Unify coaching, medical, performance, and operations data in a single timeline."
+      },
+      "coordinate": {
+        "title": "Coordinate smarter workflows",
+        "desc": "Automate approvals, wellness checks, and match planning without leaving the platform."
+      },
+      "measure": {
+        "title": "Measure what matters",
+        "desc": "Dashboards highlight readiness, injury risk, and training loads in real time."
+      }
+    },
+    "outcome": {
+      "title": "Designed for elite environments",
+      "items": {
+        "clarity": "Shared context for coaches, analysts, medics, and players.",
+        "speed": "Minutes saved daily on reporting and approvals.",
+        "confidence": "Decision support backed by live data and video."
+      }
+    }
   },
   "features": {
     "eyebrow": "Fonctionnalités Principales",
     "title": "Tout ce dont votre personnel a besoin",
-    "subtitle": "Gestion d'équipe, tableaux tactiques, bien-être et médical, rapports et plus encore."
+    "subtitle": "Gestion d'équipe, tableaux tactiques, bien-être et médical, rapports et plus encore.",
+    "categories": {
+      "medical": {
+        "title": "Integrated medical hub",
+        "desc": "Treatment notes, injury history, and rehab protocols connected to daily availability."
+      },
+      "performance": {
+        "title": "Performance intelligence",
+        "desc": "Track external and internal loads with automated readiness scoring."
+      },
+      "tactical": {
+        "title": "Immersive tactical tools",
+        "desc": "Interactive match plans, player tasks, and live session visualisation."
+      },
+      "operations": {
+        "title": "Club operations",
+        "desc": "Travel, equipment, and compliance managed with configurable workflows."
+      }
+    },
+    "highlights": {
+      "title": "Why clubs choose TACTEC",
+      "items": {
+        "mobile": "Native player and staff apps in 8 languages.",
+        "security": "Enterprise-grade roles, permissions, and audit logs.",
+        "support": "White-glove onboarding with football specialists."
+      }
+    }
   },
   "tech": {
     "eyebrow": "Technologie",
     "title": "Architecture propre. Multi-plateforme. Rapide.",
-    "subtitle": "Stack moderne, conception universelle et un moteur graphique puissant."
+    "subtitle": "Stack moderne, conception universelle et un moteur graphique puissant.",
+    "pillars": {
+      "cloud": {
+        "title": "Secure cloud infrastructure",
+        "desc": "Hosted in EU data centres with automated backups and encryption."
+      },
+      "analytics": {
+        "title": "Analytics-ready data",
+        "desc": "Well-defined APIs feed BI tools and scouting platforms effortlessly."
+      },
+      "access": {
+        "title": "Accessible everywhere",
+        "desc": "Responsive web, mobile apps, and offline capture for travel days."
+      }
+    }
   },
   "cta": {
     "eyebrow": "Prochaine Étape",
@@ -65,7 +141,8 @@
     "subtitle": "Demandez une démo en direct ou essayez l'application joueur.",
     "buttons": {
       "demo": "Demander une Démo en Direct",
-      "app": "Essayer l'App Joueur"
+      "app": "Essayer l'App Joueur",
+      "tour": "Download Product Overview"
     }
   },
   "footer": {
@@ -160,6 +237,41 @@
       "clubMin": "Club name must be at least 2 characters",
       "roleMin": "Please select your role",
       "messageMin": "Message must be at least 10 characters"
+    }
+  },
+  "metrics": {
+    "title": "Operational gains delivered",
+    "subtitle": "TACTEC helps clubs reclaim time and improve player care from day one.",
+    "items": {
+      "satisfaction": {
+        "value": "96%",
+        "label": "Staff satisfaction",
+        "desc": "Teams report higher clarity in daily schedules."
+      },
+      "reporting": {
+        "value": "18 hrs",
+        "label": "Reporting saved weekly",
+        "desc": "Automated dashboards replace manual spreadsheet updates."
+      },
+      "recovery": {
+        "value": "40%",
+        "label": "Faster return-to-play decisions",
+        "desc": "Unified medical notes accelerate interdisciplinary sign-off."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Trusted by progressive clubs",
+    "subtitle": "Leaders across leagues rely on TACTEC to unite staff and unlock performance.",
+    "quotes": {
+      "director": {
+        "quote": "TACTEC finally gives our staff a single version of truth. Training loads, rehab, and match prep now live together.",
+        "role": "Performance Director, European Top Flight"
+      },
+      "coach": {
+        "quote": "We move from training ground to match day with the same workflows. Staff actually enjoys updating the platform.",
+        "role": "First Team Coach, Championship Club"
+      }
     }
   }
 }

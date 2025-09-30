@@ -1,4 +1,7 @@
 {
+  "layout": {
+    "skip": "انتقال إلى المحتوى الرئيسي"
+  },
   "nav": {
     "club_os": "نظام النادي",
     "challenge": "التحدي",
@@ -18,11 +21,22 @@
     "subtitle": "يوحد TACTEC علوم الرياضة والطب والتكتيكات والعمليات في منصة واحدة نظيفة لكل قسم.",
     "cta": {
       "start": "ابدأ الآن",
-      "demo": "طلب عرض توضيحي"
+      "demo": "طلب عرض توضيحي",
+      "learn": "استكشاف القدرات"
     },
     "stats": {
-      "injury": "انخفاض إصابات الأنسجة الرخوة",
-      "sync": "مزامنة البيانات أسرع"
+      "injury": {
+        "value": "32%",
+        "label": "انخفاض إصابات الأنسجة الرخوة"
+      },
+      "sync": {
+        "value": "4x",
+        "label": "مزامنة البيانات أسرع"
+      },
+      "adoption": {
+        "value": "12 يومًا",
+        "label": "متوسط وقت الانضمام"
+      }
     }
   },
   "challenge": {
@@ -47,17 +61,79 @@
   "solution": {
     "eyebrow": "الحل",
     "title": "نظام تشغيل واحد لناديك",
-    "subtitle": "اجمع الأشخاص والعمليات والأداء معًا مع TACTEC."
+    "subtitle": "اجمع الأشخاص والعمليات والأداء معًا مع TACTEC.",
+    "pillars": {
+      "connect": {
+        "title": "Connect every department",
+        "desc": "Unify coaching, medical, performance, and operations data in a single timeline."
+      },
+      "coordinate": {
+        "title": "Coordinate smarter workflows",
+        "desc": "Automate approvals, wellness checks, and match planning without leaving the platform."
+      },
+      "measure": {
+        "title": "Measure what matters",
+        "desc": "Dashboards highlight readiness, injury risk, and training loads in real time."
+      }
+    },
+    "outcome": {
+      "title": "Designed for elite environments",
+      "items": {
+        "clarity": "Shared context for coaches, analysts, medics, and players.",
+        "speed": "Minutes saved daily on reporting and approvals.",
+        "confidence": "Decision support backed by live data and video."
+      }
+    }
   },
   "features": {
     "eyebrow": "المميزات الأساسية",
     "title": "كل ما يحتاجه موظفوك",
-    "subtitle": "إدارة الفريق، اللوحات التكتيكية، الصحة والطب، التقارير والمزيد."
+    "subtitle": "إدارة الفريق، اللوحات التكتيكية، الصحة والطب، التقارير والمزيد.",
+    "categories": {
+      "medical": {
+        "title": "Integrated medical hub",
+        "desc": "Treatment notes, injury history, and rehab protocols connected to daily availability."
+      },
+      "performance": {
+        "title": "Performance intelligence",
+        "desc": "Track external and internal loads with automated readiness scoring."
+      },
+      "tactical": {
+        "title": "Immersive tactical tools",
+        "desc": "Interactive match plans, player tasks, and live session visualisation."
+      },
+      "operations": {
+        "title": "Club operations",
+        "desc": "Travel, equipment, and compliance managed with configurable workflows."
+      }
+    },
+    "highlights": {
+      "title": "Why clubs choose TACTEC",
+      "items": {
+        "mobile": "Native player and staff apps in 8 languages.",
+        "security": "Enterprise-grade roles, permissions, and audit logs.",
+        "support": "White-glove onboarding with football specialists."
+      }
+    }
   },
   "tech": {
     "eyebrow": "التكنولوجيا",
     "title": "بنية نظيفة. متعدد المنصات. سريع.",
-    "subtitle": "مجموعة حديثة، تصميم عالمي ومحرك رسومات قوي."
+    "subtitle": "مجموعة حديثة، تصميم عالمي ومحرك رسومات قوي.",
+    "pillars": {
+      "cloud": {
+        "title": "Secure cloud infrastructure",
+        "desc": "Hosted in EU data centres with automated backups and encryption."
+      },
+      "analytics": {
+        "title": "Analytics-ready data",
+        "desc": "Well-defined APIs feed BI tools and scouting platforms effortlessly."
+      },
+      "access": {
+        "title": "Accessible everywhere",
+        "desc": "Responsive web, mobile apps, and offline capture for travel days."
+      }
+    }
   },
   "cta": {
     "eyebrow": "الخطوة التالية",
@@ -65,7 +141,8 @@
     "subtitle": "اطلب عرضًا توضيحيًا مباشرًا أو جرّب تطبيق اللاعب.",
     "buttons": {
       "demo": "طلب عرض توضيحي مباشر",
-      "app": "جرّب تطبيق اللاعب"
+      "app": "جرّب تطبيق اللاعب",
+      "tour": "Download Product Overview"
     }
   },
   "footer": {
@@ -160,6 +237,41 @@
       "clubMin": "Club name must be at least 2 characters",
       "roleMin": "Please select your role",
       "messageMin": "Message must be at least 10 characters"
+    }
+  },
+  "metrics": {
+    "title": "Operational gains delivered",
+    "subtitle": "TACTEC helps clubs reclaim time and improve player care from day one.",
+    "items": {
+      "satisfaction": {
+        "value": "96%",
+        "label": "Staff satisfaction",
+        "desc": "Teams report higher clarity in daily schedules."
+      },
+      "reporting": {
+        "value": "18 hrs",
+        "label": "Reporting saved weekly",
+        "desc": "Automated dashboards replace manual spreadsheet updates."
+      },
+      "recovery": {
+        "value": "40%",
+        "label": "Faster return-to-play decisions",
+        "desc": "Unified medical notes accelerate interdisciplinary sign-off."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Trusted by progressive clubs",
+    "subtitle": "Leaders across leagues rely on TACTEC to unite staff and unlock performance.",
+    "quotes": {
+      "director": {
+        "quote": "TACTEC finally gives our staff a single version of truth. Training loads, rehab, and match prep now live together.",
+        "role": "Performance Director, European Top Flight"
+      },
+      "coach": {
+        "quote": "We move from training ground to match day with the same workflows. Staff actually enjoys updating the platform.",
+        "role": "First Team Coach, Championship Club"
+      }
     }
   }
 }
