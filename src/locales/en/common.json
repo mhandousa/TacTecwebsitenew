@@ -55,6 +55,11 @@
       }
     }
   },
+  "problemSolution": {
+    "label": "Club Operating System",
+    "copy": "TACTEC replaces scattered tools with one tactical, medical, and operations workspace. Real-time updates flow across departments so everyone prepares with the same data.",
+    "note": "Clarity for coaches. Confidence for players. Control for leadership."
+  },
   "challenge": {
     "eyebrow": "The Challenge",
     "title": "Fragmented Football Operations Slow Clubs Down",
@@ -131,6 +136,14 @@
         "support": "White-glove onboarding with football specialists."
       }
     }
+  },
+  "socialProof": {
+    "eyebrow": "Trusted Clubs",
+    "title": "Adopted by ambitious football programmes",
+    "subtitle": "From academies to first teams, TACTEC keeps staff aligned, informed, and ready for match day.",
+    "logos": ["Rovers FC", "Metro United", "Coastal Academy", "Europa Women"],
+    "quote": "TACTEC saved us 12 hours every week in manual reporting. Coaches now review the same dashboard as medical staff.",
+    "role": "Club Manager, Championship Organisation"
   },
   "tech": {
     "eyebrow": "Technology",
@@ -210,6 +223,48 @@
         "result": "Zero missed approvals"
       }
     }
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "title": "Choose Your Plan",
+    "subtitle": "Flexible packages for academies, first teams, and enterprise clubs.",
+    "cta": "Request pricing",
+    "plans": [
+      {
+        "name": "Starter",
+        "price": "$99/mo",
+        "description": "For academies and clubs exploring digital workflows.",
+        "features": [
+          "Up to 50 registered players",
+          "Interactive tactical board",
+          "Wellness and availability tracking",
+          "Email support within 48 hours"
+        ]
+      },
+      {
+        "name": "Pro",
+        "price": "$249/mo",
+        "description": "Full club operating system for growing departments.",
+        "highlighted": true,
+        "features": [
+          "Unlimited players and staff",
+          "Medical and rehab module",
+          "Advanced analytics and dashboards",
+          "Priority support with onboarding"
+        ]
+      },
+      {
+        "name": "Enterprise",
+        "price": "Let’s talk",
+        "description": "Tailored workflows, integrations, and dedicated partnership.",
+        "features": [
+          "Dedicated success manager",
+          "API and data warehouse access",
+          "Custom onboarding programme",
+          "24/7 multilingual support"
+        ]
+      }
+    ]
   },
   "cta": {
     "eyebrow": "Next Step",
