@@ -108,12 +108,12 @@ export default function TacTecLanding() {
             >
               <span className="sr-only">TACTEC</span>
               <Image
-                src="/icons/icon0.svg"
+                src="/icons/icon1.png"
                 alt="TACTEC logo"
-                width={120}
-                height={120}
+                width={96}
+                height={96}
                 priority
-                className="h-10 w-auto"
+                className="h-10 w-10"
               />
             </Link>
             <div className="flex items-center gap-4">
