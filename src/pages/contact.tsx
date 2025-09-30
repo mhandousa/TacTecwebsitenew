@@ -20,6 +20,15 @@ const buildContactFormSchema = (translate: (key: string) => string) =>
     requestType: z.enum(["demo", "sales", "support", "general"]),
   });
 
+type ContactApiResult = {
+  success?: boolean;
+  message?: unknown;
+  error?: unknown;
+};
+
+const isContactApiResult = (value: unknown): value is ContactApiResult =>
+  typeof value === "object" && value !== null;
+
 export default function ContactPage() {
   const t = useTranslations("contact");
   const tFooter = useTranslations("footer");
@@ -75,11 +84,28 @@ export default function ContactPage() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get("content-type") ?? "";
+      let result: unknown = null;
 
-      if (response.ok && result.success) {
+      if (contentType.toLowerCase().includes("application/json")) {
+        try {
+          result = await response.json();
+        } catch (parseError) {
+          console.error("Failed to parse contact response JSON:", parseError);
+          throw new Error(t("status.error"));
+        }
+      } else if (!response.ok) {
+        throw new Error(t("status.apiDefaults.error"));
+      }
+
+      const parsedResult = isContactApiResult(result) ? result : null;
+      const apiSuccess = response.ok && (parsedResult === null || parsedResult.success !== false);
+
+      if (apiSuccess) {
         const apiMessage =
-          typeof result.message === "string" ? result.message.trim() : "";
+          parsedResult && typeof parsedResult.message === "string"
+            ? parsedResult.message.trim()
+            : "";
         const successMessage =
           apiMessage && apiMessage !== t("status.apiDefaults.success")
             ? apiMessage
@@ -107,8 +133,8 @@ export default function ContactPage() {
         }, 100);
       } else {
         const apiError =
-          result && typeof result.error === "string"
-            ? result.error.trim()
+          parsedResult && typeof parsedResult.error === "string"
+            ? parsedResult.error.trim()
             : "";
         const errorMessage =
           apiError && apiError !== t("status.apiDefaults.error")
