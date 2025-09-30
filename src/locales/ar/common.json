@@ -1,4 +1,7 @@
 {
+  "layout": {
+    "skip": "تخطي إلى المحتوى الرئيسي"
+  },
   "nav": {
     "club_os": "نظام النادي",
     "challenge": "التحدي",
@@ -18,11 +21,22 @@
     "subtitle": "يوحد TACTEC علوم الرياضة والطب والتكتيكات والعمليات في منصة واحدة نظيفة لكل قسم.",
     "cta": {
       "start": "ابدأ الآن",
-      "demo": "طلب عرض توضيحي"
+      "demo": "طلب عرض توضيحي",
+      "learn": "استكشف الإمكانات"
     },
     "stats": {
-      "injury": "انخفاض إصابات الأنسجة الرخوة",
-      "sync": "مزامنة البيانات أسرع"
+      "injury": {
+        "value": "32%",
+        "label": "انخفاض إصابات الأنسجة الرخوة"
+      },
+      "sync": {
+        "value": "4x",
+        "label": "مزامنة بيانات أسرع"
+      },
+      "adoption": {
+        "value": "12 يومًا",
+        "label": "متوسط وقت الانضمام"
+      }
     }
   },
   "challenge": {
@@ -47,17 +61,114 @@
   "solution": {
     "eyebrow": "الحل",
     "title": "نظام تشغيل واحد لناديك",
-    "subtitle": "اجمع الأشخاص والعمليات والأداء معًا مع TACTEC."
+    "subtitle": "اجمع الأشخاص والعمليات والأداء معًا مع TACTEC.",
+    "pillars": {
+      "connect": {
+        "title": "ربط كل قسم",
+        "desc": "وحّد بيانات التدريب، والطب، والأداء، والعمليات في خط زمني واحد."
+      },
+      "coordinate": {
+        "title": "تنسيق سير عمل أكثر ذكاءً",
+        "desc": "أتمت الموافقات وفحوصات الجاهزية وتخطيط المباريات دون مغادرة المنصة."
+      },
+      "measure": {
+        "title": "قياس ما يهم",
+        "desc": "تُبرز اللوحات مؤشرات الجاهزية ومخاطر الإصابة وأحمال التدريب في الوقت الفعلي."
+      }
+    },
+    "outcome": {
+      "title": "مصمم لبيئات النخبة",
+      "items": {
+        "clarity": "سياق مشترك للمدربين والمحللين والأطباء واللاعبين.",
+        "speed": "دقائق يتم توفيرها يوميًا في التقارير والموافقات.",
+        "confidence": "دعم اتخاذ القرار مدعوم ببيانات مباشرة وفيديو."
+      }
+    }
   },
   "features": {
     "eyebrow": "المميزات الأساسية",
     "title": "كل ما يحتاجه موظفوك",
-    "subtitle": "إدارة الفريق، اللوحات التكتيكية، الصحة والطب، التقارير والمزيد."
+    "subtitle": "إدارة الفريق، اللوحات التكتيكية، الصحة والطب، التقارير والمزيد.",
+    "categories": {
+      "medical": {
+        "title": "مركز طبي متكامل",
+        "desc": "ملاحظات العلاج، تاريخ الإصابات، وبروتوكولات التأهيل مرتبطة بالتوافر اليومي."
+      },
+      "performance": {
+        "title": "ذكاء الأداء",
+        "desc": "تتبع الأحمال الخارجية والداخلية مع تقييم جاهزية مؤتمت."
+      },
+      "tactical": {
+        "title": "أدوات تكتيكية غامرة",
+        "desc": "خطط مباريات تفاعلية، مهام للاعبين، وتصور حي للحصص التدريبية."
+      },
+      "operations": {
+        "title": "عمليات النادي",
+        "desc": "إدارة السفر، والمعدات، والامتثال عبر سير عمل قابل للتخصيص."
+      }
+    },
+    "highlights": {
+      "title": "لماذا تختار الأندية TACTEC",
+      "items": {
+        "mobile": "تطبيقات أصلية للاعبين والموظفين بثماني لغات.",
+        "security": "أدوار وصلاحيات وسجلات تدقيق بمستوى المؤسسات.",
+        "support": "تهيئة مخصصة بدعم متخصصين في كرة القدم."
+      }
+    }
   },
   "tech": {
     "eyebrow": "التكنولوجيا",
     "title": "بنية نظيفة. متعدد المنصات. سريع.",
-    "subtitle": "مجموعة حديثة، تصميم عالمي ومحرك رسومات قوي."
+    "subtitle": "مجموعة حديثة، تصميم عالمي ومحرك رسومات قوي.",
+    "pillars": {
+      "cloud": {
+        "title": "بنية سحابية آمنة",
+        "desc": "استضافة في مراكز بيانات الاتحاد الأوروبي مع نسخ احتياطي تلقائي وتشفير."
+      },
+      "analytics": {
+        "title": "بيانات جاهزة للتحليلات",
+        "desc": "واجهات برمجة واضحة تغذي أدوات ذكاء الأعمال ومنصات الكشافة بسهولة."
+      },
+      "access": {
+        "title": "متاحة في كل مكان",
+        "desc": "ويب متجاوب، وتطبيقات للهواتف، والتقاط دون اتصال لأيام السفر."
+      }
+    }
+  },
+  "metrics": {
+    "title": "عوائد تشغيلية محققة",
+    "subtitle": "يساعد TACTEC الأندية على استعادة الوقت وتحسين رعاية اللاعبين من اليوم الأول.",
+    "items": {
+      "satisfaction": {
+        "value": "96%",
+        "label": "رضا الموظفين",
+        "desc": "الفرق تبلغ عن وضوح أعلى في الجداول اليومية."
+      },
+      "reporting": {
+        "value": "18 ساعة",
+        "label": "وقت تقارير موفّر أسبوعيًا",
+        "desc": "اللوحات المؤتمتة تستبدل تحديثات الجداول اليدوية."
+      },
+      "recovery": {
+        "value": "40%",
+        "label": "قرارات عودة أسرع للعب",
+        "desc": "ملاحظات طبية موحدة تسرّع الموافقات متعددة التخصصات."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "موثوق به من قبل الأندية المتقدمة",
+    "subtitle": "يعتمد القادة عبر الدوريات على TACTEC لتوحيد الطواقم وإطلاق الأداء.",
+    "quotes": {
+      "director": {
+        "quote": "يمنحنا TACTEC أخيرًا نسخة واحدة من الحقيقة. أحمال التدريب، والتأهيل، والإعداد للمباراة أصبحت معًا الآن.",
+        "role": "مدير الأداء، دوري أوروبي للدرجة الأولى"
+      },
+      "coach": {
+        "quote": "ننتقل من أرض التدريب إلى يوم المباراة بنفس سير العمل. الموظفون يستمتعون فعلاً بتحديث المنصة.",
+        "role": "مدرب الفريق الأول، نادٍ من بطولة الدرجة الثانية"
+      }
+    }
   },
   "cta": {
     "eyebrow": "الخطوة التالية",
@@ -86,81 +197,81 @@
   },
   "contact": {
     "meta": {
-      "title": "Contact - TACTEC",
-      "description": "Get in touch with TACTEC team for demos and inquiries. Transform your football club operations with our professional platform.",
-      "ogTitle": "Contact TACTEC - Football Club Management Platform",
-      "ogDescription": "Request a demo or get in touch with our team to learn how TACTEC can transform your club operations."
+      "title": "اتصل بنا - TACTEC",
+      "description": "تواصل مع فريق TACTEC لطلب العروض والاستفسارات. حوّل عمليات نادي كرة القدم عبر منصتنا الاحترافية.",
+      "ogTitle": "تواصل مع TACTEC - منصة إدارة أندية كرة القدم",
+      "ogDescription": "اطلب عرضًا توضيحيًا أو تواصل مع فريقنا لتعرف كيف يمكن لـ TACTEC تحويل عمليات ناديك."
     },
     "nav": {
-      "back": "← Back to Home"
+      "back": "← العودة إلى الصفحة الرئيسية"
     },
     "header": {
-      "title": "Get in Touch",
-      "subtitle": "Ready to transform your club? Request a demo or contact our team."
+      "title": "تواصل معنا",
+      "subtitle": "جاهز لتحويل ناديك؟ اطلب عرضًا توضيحيًا أو تواصل مع فريقنا."
     },
     "form": {
       "requestType": {
-        "label": "Request Type *",
+        "label": "نوع الطلب *",
         "options": {
-          "demo": "Request Demo",
-          "sales": "Sales Inquiry",
-          "support": "Support",
-          "general": "General Question"
+          "demo": "طلب عرض توضيحي",
+          "sales": "استفسار مبيعات",
+          "support": "دعم فني",
+          "general": "سؤال عام"
         }
       },
       "name": {
-        "label": "Your Name *",
-        "placeholder": "John Doe"
+        "label": "اسمك *",
+        "placeholder": "محمد أحمد"
       },
       "email": {
-        "label": "Email Address *",
-        "placeholder": "john@club.com"
+        "label": "البريد الإلكتروني *",
+        "placeholder": "name@club.com"
       },
       "club": {
-        "label": "Club/Organization *",
-        "placeholder": "FC Example"
+        "label": "النادي / الجهة *",
+        "placeholder": "مثال FC"
       },
       "role": {
-        "label": "Your Role *",
-        "placeholder": "Manager, Coach, Director, etc."
+        "label": "دورك *",
+        "placeholder": "مدرب، مدير، محلل، إلخ"
       },
       "message": {
-        "label": "Message *",
-        "placeholder": "Tell us about your needs..."
+        "label": "الرسالة *",
+        "placeholder": "أخبرنا عن احتياجاتك..."
       },
       "submit": {
-        "default": "Send Message",
-        "loading": "Sending..."
+        "default": "إرسال الرسالة",
+        "loading": "جاري الإرسال..."
       }
     },
     "status": {
-      "success": "Your message has been sent successfully!",
-      "error": "Something went wrong. Please try again or email us directly.",
+      "success": "تم إرسال رسالتك بنجاح!",
+      "error": "حدث خطأ ما. يرجى المحاولة مرة أخرى أو مراسلتنا مباشرة.",
       "apiDefaults": {
-        "success": "Your message has been sent successfully!",
-        "error": "Failed to send message"
+        "success": "تم إرسال رسالتك بنجاح!",
+        "error": "فشل إرسال الرسالة"
       }
     },
     "info": {
       "email": {
-        "label": "Email",
+        "label": "البريد الإلكتروني",
         "value": "info@tactec.club"
       },
       "response": {
-        "label": "Response Time",
-        "value": "Within 24 hours"
+        "label": "زمن الاستجابة",
+        "value": "خلال 24 ساعة"
       },
       "languages": {
-        "label": "Languages",
-        "value": "8 languages supported"
+        "label": "اللغات",
+        "value": "دعم 8 لغات"
       }
     },
     "validation": {
-      "nameMin": "Name must be at least 2 characters",
-      "email": "Please enter a valid email address",
-      "clubMin": "Club name must be at least 2 characters",
-      "roleMin": "Please select your role",
-      "messageMin": "Message must be at least 10 characters"
+      "nameMin": "يجب ألا يقل الاسم عن حرفين",
+      "email": "يرجى إدخال بريد إلكتروني صالح",
+      "clubMin": "يجب ألا يقل اسم النادي عن حرفين",
+      "roleMin": "يرجى تحديد دورك",
+      "messageMin": "يجب ألا تقل الرسالة عن 10 أحرف"
     }
   }
 }
