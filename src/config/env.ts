@@ -18,25 +18,27 @@ interface EnvConfig {
  */
 function validateEnv(): EnvConfig {
   const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || '';
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || '';
   const NODE_ENV = (process.env.NODE_ENV || 'development') as 'development' | 'production' | 'test';
   const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN || '';
   const ERROR_ENDPOINT = process.env.NEXT_PUBLIC_ERROR_ENDPOINT || '';
 
+  const errors: string[] = [];
+
+  if (SITE_URL && !SITE_URL.match(/^https?:\/\/.+/)) {
+    errors.push(`SITE_URL has invalid format: ${SITE_URL}`);
+  }
+
   // Validation for production environment
   if (NODE_ENV === 'production') {
-    const errors: string[] = [];
-
     if (!GA_TRACKING_ID) {
       console.warn('⚠️  NEXT_PUBLIC_GA_ID is not set. Analytics will not work.');
     } else if (!GA_TRACKING_ID.match(/^G-[A-Z0-9]+$/)) {
       console.warn(`⚠️  GA_TRACKING_ID has invalid format: ${GA_TRACKING_ID}`);
     }
-    
+
     if (!SITE_URL) {
       errors.push('NEXT_PUBLIC_SITE_URL is required in production!');
-    } else if (!SITE_URL.match(/^https?:\/\/.+/)) {
-      errors.push(`SITE_URL has invalid format: ${SITE_URL}`);
     }
 
     if (!SENTRY_DSN && !ERROR_ENDPOINT) {
@@ -44,15 +46,27 @@ function validateEnv(): EnvConfig {
     } else if (SENTRY_DSN && !SENTRY_DSN.match(/^https:\/\/[a-f0-9]+@[a-z0-9]+\.ingest\.(sentry\.io|de\.sentry\.io)\/[0-9]+$/)) {
       console.warn(`⚠️  SENTRY_DSN has invalid format: ${SENTRY_DSN}`);
     }
+  }
 
-    if (errors.length > 0) {
-      throw new Error(`Environment validation failed:\n${errors.join('\n')}`);
+  if (errors.length > 0) {
+    throw new Error(`Environment validation failed:\n${errors.join('\n')}`);
+  }
+
+  let resolvedSiteUrl = SITE_URL;
+  if (!resolvedSiteUrl) {
+    if (NODE_ENV === 'development' || NODE_ENV === 'test') {
+      resolvedSiteUrl = 'http://localhost:3000';
+      console.warn(
+        'NEXT_PUBLIC_SITE_URL is not set. Falling back to http://localhost:3000 for non-production environments only.',
+      );
+    } else {
+      throw new Error('NEXT_PUBLIC_SITE_URL is required.');
     }
   }
 
   return {
     GA_TRACKING_ID,
-    SITE_URL: SITE_URL || 'http://localhost:3000',
+    SITE_URL: resolvedSiteUrl,
     NODE_ENV,
     SENTRY_DSN,
     ERROR_ENDPOINT,

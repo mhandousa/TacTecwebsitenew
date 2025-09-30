@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import Head from "next/head";
 import Image from "next/image";
@@ -6,11 +6,45 @@ import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
 import StructuredData from "./StructuredData";
 import { SITE_URL } from "@/config/env";
-import { trackEvent } from "@/utils/analytics";
+import { trackEvent, trackScrollDepth } from "@/utils/analytics";
 
 export default function TacTecLanding() {
   const t = useTranslations();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      return undefined;
+    }
+
+    const thresholds = [25, 50, 75, 100];
+    const seen = new Set<number>();
+
+    const evaluateScrollDepth = () => {
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - window.innerHeight;
+      const progress = scrollable <= 0 ? 100 : (window.scrollY / scrollable) * 100;
+
+      for (const threshold of thresholds) {
+        if (progress >= threshold && !seen.has(threshold)) {
+          seen.add(threshold);
+          trackScrollDepth(threshold);
+        }
+      }
+    };
+
+    const handleScroll = () => evaluateScrollDepth();
+    const handleResize = () => evaluateScrollDepth();
+
+    evaluateScrollDepth();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handleCTAClick = (type: string) => {
     trackEvent("cta_click", { type });

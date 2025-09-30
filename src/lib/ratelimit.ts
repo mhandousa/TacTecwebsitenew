@@ -122,15 +122,26 @@ const baseOptions: RateLimitOptions = {
 
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+const isProduction = process.env.NODE_ENV === 'production';
+
+if ((!redisUrl || !redisToken) && isProduction) {
+  throw new Error(
+    'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be configured in production for durable rate limiting.',
+  );
+}
 
 const memoryLimiter = new MemoryRateLimiter(baseOptions);
-const persistentLimiter = redisUrl && redisToken ? new UpstashHttpRateLimiter({ ...baseOptions, baseUrl: redisUrl, token: redisToken }) : null;
+const persistentLimiter = redisUrl && redisToken
+  ? new UpstashHttpRateLimiter({ ...baseOptions, baseUrl: redisUrl, token: redisToken })
+  : null;
 
-if (!persistentLimiter && process.env.NODE_ENV !== 'production') {
+if (!persistentLimiter && !isProduction) {
   console.warn(
     'Using in-memory rate limiter because UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN are not set. Configure these variables to enable durable rate limiting.',
   );
 }
+
+let durableFallbackNotified = !persistentLimiter;
 
 export const ratelimit = {
   async check(identifier: string, limit?: number): Promise<RateLimitResult> {
@@ -138,7 +149,10 @@ export const ratelimit = {
       try {
         return await persistentLimiter.check(identifier, limit);
       } catch (error) {
-        console.error('Durable rate limiter failed, falling back to in-memory limiter.', error);
+        if (!durableFallbackNotified) {
+          durableFallbackNotified = true;
+          console.error('Durable rate limiter failed, falling back to in-memory limiter.', error);
+        }
       }
     }
 

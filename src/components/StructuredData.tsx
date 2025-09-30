@@ -1,21 +1,23 @@
 import Head from 'next/head';
+import { SITE_URL } from '@/config/env';
 
 interface StructuredDataProps {
   type?: 'website' | 'organization' | 'softwareApplication';
 }
 
 export default function StructuredData({ type = 'softwareApplication' }: StructuredDataProps) {
+  const canonicalBase = SITE_URL.replace(/\/+$/, '');
+
   const schemas = {
     organization: {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Ventio",
-      "url": "https://ventio.com",
-      "logo": "https://tactec.club/images/logo.png",
+      "url": canonicalBase,
+      "logo": `${canonicalBase}/images/logo.png`,
       "description": "TACTEC by Ventio - Professional football club management platform",
       "sameAs": [
-        "https://twitter.com/ventio",
-        "https://linkedin.com/company/ventio"
+        "https://www.linkedin.com/company/ventio"
       ]
     },
     softwareApplication: {
@@ -25,44 +27,29 @@ export default function StructuredData({ type = 'softwareApplication' }: Structu
       "applicationCategory": "BusinessApplication",
       "applicationSubCategory": "Sports Management Software",
       "operatingSystem": "Web, iOS, Android",
+      "isAccessibleForFree": false,
       "description": "TACTEC unifies tactical, medical, and operational workflows into one professional platform for football clubs.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD",
-        "description": "Contact for pricing"
-      },
       "creator": {
         "@type": "Organization",
         "name": "Ventio",
-        "url": "https://ventio.com"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "50"
+        "url": canonicalBase
       },
       "featureList": [
-        "Team Management",
-        "Tactical Boards",
-        "Medical & Wellness Tracking",
-        "Performance Analytics",
-        "Multi-language Support",
-        "Cross-platform Compatibility"
+        "Team management",
+        "Tactical planning",
+        "Medical & wellness tracking",
+        "Performance analytics",
+        "Multi-language staff & player apps"
       ]
     },
     website: {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "TACTEC",
-      "url": "https://tactec.club",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://tactec.club/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+      "url": canonicalBase,
+      "inLanguage": "en"
     }
-  };
+  } as const;
 
   const schemaData = schemas[type];
 

@@ -18,11 +18,11 @@
 4. **Rate limiting abstraction** – The contact endpoint can seamlessly upgrade from an in-memory limiter to an Upstash Redis-backed implementation without code changes. 【F:src/lib/ratelimit.ts†L1-L120】
 
 ## Findings & Recommendations
-1. **Durable rate limiting is optional, not enforced**  
-   When `UPSTASH_REDIS_REST_URL`/`_TOKEN` are missing, the API quietly falls back to an in-memory limiter that resets on process restart, which is insufficient for production traffic or multi-instance deployments. Promote configuration failures to hard errors (or at least critical logs) outside development, and add observability around limiter downgrades. 【F:src/lib/ratelimit.ts†L69-L118】
+1. **Durable rate limiting is optional, not enforced** _(resolved)_
+   Production now fails fast if `UPSTASH_REDIS_REST_URL` or `_TOKEN` are unset, and the system logs a single degradation warning whenever the durable limiter is unavailable so operators can react to outages. 【F:src/lib/ratelimit.ts†L97-L142】
 
-2. **Structured data risks inaccurate claims**  
-   The JSON-LD schema advertises a perfect "price" of 0 USD and a 4.8/50 review aggregate without a backend source of truth. Search engines typically require verifiable ratings; consider removing or dynamically sourcing this metadata to avoid manual penalties. 【F:src/components/StructuredData.tsx†L1-L56】
+2. **Structured data risks inaccurate claims** _(resolved)_
+   The JSON-LD payload no longer publishes unverifiable pricing or ratings data and now reflects the real canonical host. 【F:src/components/StructuredData.tsx†L1-L63】
 
 3. **Contact form response handling assumes JSON** _(addressed)_
    The frontend now validates the `Content-Type` header and safely guards JSON parsing so unexpected responses no longer crash the submission flow. Keep API responses consistently typed and log anomalies for operational visibility. 【F:src/pages/contact.tsx†L79-L145】
@@ -30,14 +30,13 @@
 4. **PII governance for contact submissions**  
    Although the API logs only metadata, the comment notes future database/CRM integrations. Define a data-retention policy and ensure any persistence layer redacts or encrypts sensitive fields before shipping. 【F:src/pages/api/contact.ts†L89-L149】
 
-5. **Environment defaults mask misconfiguration**  
-   Falling back to `http://localhost:3000` for `SITE_URL` keeps builds green but can ship incorrect canonical links in production if the variable is omitted. Fail fast for missing `NEXT_PUBLIC_SITE_URL` regardless of environment, or gate the fallback behind explicit development checks. 【F:src/config/env.ts†L41-L67】
+5. **Environment defaults mask misconfiguration** _(resolved)_
+   `NEXT_PUBLIC_SITE_URL` must now be present (and properly formatted) in all environments, with an explicit, logged fallback reserved for local development and tests only. 【F:src/config/env.ts†L19-L63】
 
-6. **Analytics event coverage**  
-   CTA/button clicks are tracked, but long-form scroll or section visibility metrics rely on `trackScrollDepth` without any caller in the repo. Audit analytics requirements to avoid silent gaps or dead code. 【F:src/utils/analytics.ts†L1-L64】【F:src/components/TacTecLanding.tsx†L1-L120】
+6. **Analytics event coverage** _(resolved)_
+   Scroll-depth analytics are now wired to the landing page with 25/50/75/100% thresholds so the existing GA event is emitted with real visitor behaviour. 【F:src/utils/analytics.ts†L1-L64】【F:src/components/TacTecLanding.tsx†L1-L49】
 
 ## Suggested Next Steps
 - Add automated API tests around the contact endpoint (including malformed JSON and rate limit exhaustion) to guard regression risk. 【F:src/pages/api/contact.ts†L1-L149】
-- Document required environment variables and recommended operational settings alongside deployment runbooks so misconfiguration is caught before release. 【F:src/config/env.ts†L1-L67】
 - Schedule a follow-up privacy review once persistence or analytics expansions are implemented to ensure data handling stays compliant.
 
