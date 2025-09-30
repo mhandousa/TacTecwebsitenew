@@ -3,47 +3,53 @@ import { LRUCache } from 'lru-cache';
 interface RateLimitOptions {
   interval: number;
   uniqueTokenPerInterval: number;
+  limit?: number;
 }
 
-interface RateLimitResult {
+export interface RateLimitResult {
   success: boolean;
   limit: number;
   remaining: number;
   reset: number;
 }
 
-export class RateLimiter {
-  private cache: LRUCache<string, number[]>;
-  private interval: number;
-  private limit: number;
+interface RateLimiterStrategy {
+  readonly interval: number;
+  readonly limit: number;
+  check(identifier: string, limit?: number): Promise<RateLimitResult>;
+}
 
-  constructor(options: RateLimitOptions = { interval: 15 * 60 * 1000, uniqueTokenPerInterval: 500 }) {
+class MemoryRateLimiter implements RateLimiterStrategy {
+  private cache: LRUCache<string, number[]>;
+  readonly interval: number;
+  readonly limit: number;
+
+  constructor(options: RateLimitOptions) {
     this.interval = options.interval;
-    this.limit = 5; // 5 requests per interval
-    
+    this.limit = options.limit ?? 5;
+
     this.cache = new LRUCache({
-      max: options.uniqueTokenPerInterval || 500,
+      max: options.uniqueTokenPerInterval,
       ttl: options.interval,
     });
   }
 
-  check(identifier: string, limit: number = this.limit): RateLimitResult {
+  async check(identifier: string, limit: number = this.limit): Promise<RateLimitResult> {
     const now = Date.now();
     const timestamps = this.cache.get(identifier) || [];
-    
-    // Remove old timestamps outside the window
+
     const validTimestamps = timestamps.filter(ts => now - ts < this.interval);
-    
+
     const isAllowed = validTimestamps.length < limit;
-    
+
     if (isAllowed) {
       validTimestamps.push(now);
       this.cache.set(identifier, validTimestamps);
     }
-    
+
     const oldestTimestamp = validTimestamps[0] || now;
     const resetTime = oldestTimestamp + this.interval;
-    
+
     return {
       success: isAllowed,
       limit,
@@ -53,8 +59,96 @@ export class RateLimiter {
   }
 }
 
-// Export singleton instance
-export const ratelimit = new RateLimiter({
-  interval: 15 * 60 * 1000, // 15 minutes
+class UpstashHttpRateLimiter implements RateLimiterStrategy {
+  private readonly baseUrl: string;
+  private readonly token: string;
+  readonly interval: number;
+  readonly limit: number;
+
+  constructor(options: RateLimitOptions & { baseUrl: string; token: string }) {
+    this.interval = options.interval;
+    this.limit = options.limit ?? 5;
+    this.baseUrl = options.baseUrl.replace(/\/+$/, '');
+    this.token = options.token;
+  }
+
+  private async command<T>(args: (string | number)[]): Promise<T> {
+    const response = await fetch(this.baseUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(args),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Upstash request failed with status ${response.status}: ${text}`);
+    }
+
+    const data = (await response.json()) as { result: T };
+    return data.result;
+  }
+
+  async check(identifier: string, limit?: number): Promise<RateLimitResult> {
+    const key = `ratelimit:contact:${identifier}`;
+    const current = await this.command<number>(['INCR', key]);
+
+    if (current === 1) {
+      await this.command(['PEXPIRE', key, this.interval]);
+    }
+
+    const ttl = await this.command<number>(['PTTL', key]);
+    const enforcedLimit = limit ?? this.limit;
+    const remaining = Math.max(0, enforcedLimit - current);
+    const success = current <= enforcedLimit;
+    const reset = Date.now() + (ttl > 0 ? ttl : this.interval);
+
+    return {
+      success,
+      limit: enforcedLimit,
+      remaining,
+      reset,
+    };
+  }
+}
+
+const baseOptions: RateLimitOptions = {
+  interval: 15 * 60 * 1000,
   uniqueTokenPerInterval: 500,
-});
+  limit: 5,
+};
+
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+const memoryLimiter = new MemoryRateLimiter(baseOptions);
+const persistentLimiter = redisUrl && redisToken ? new UpstashHttpRateLimiter({ ...baseOptions, baseUrl: redisUrl, token: redisToken }) : null;
+
+if (!persistentLimiter && process.env.NODE_ENV !== 'production') {
+  console.warn(
+    'Using in-memory rate limiter because UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN are not set. Configure these variables to enable durable rate limiting.',
+  );
+}
+
+export const ratelimit = {
+  async check(identifier: string, limit?: number): Promise<RateLimitResult> {
+    if (persistentLimiter) {
+      try {
+        return await persistentLimiter.check(identifier, limit);
+      } catch (error) {
+        console.error('Durable rate limiter failed, falling back to in-memory limiter.', error);
+      }
+    }
+
+    return memoryLimiter.check(identifier, limit);
+  },
+  get interval() {
+    return (persistentLimiter ?? memoryLimiter).interval;
+  },
+  get limit() {
+    return (persistentLimiter ?? memoryLimiter).limit;
+  },
+};
+
