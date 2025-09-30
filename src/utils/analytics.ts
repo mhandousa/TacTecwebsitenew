@@ -2,7 +2,7 @@ import { GA_TRACKING_ID } from '@/config/env';
 import { logger } from './logger';
 
 // Strict event types
-export type AnalyticsEvent = 
+export type AnalyticsEvent =
   | 'page_view'
   | 'form_submit'
   | 'form_submit_success'
@@ -10,7 +10,8 @@ export type AnalyticsEvent =
   | 'demo_request'
   | 'language_switch'
   | 'cta_click'
-  | 'scroll_depth';
+  | 'scroll_depth'
+  | 'error';
 
 // Strict event parameters
 export interface EventParams {
