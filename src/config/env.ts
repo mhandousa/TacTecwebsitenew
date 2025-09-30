@@ -17,11 +17,12 @@ interface EnvConfig {
  * Validates that required environment variables are present
  */
 function validateEnv(): EnvConfig {
-  const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || '';
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '';
   const NODE_ENV = (process.env.NODE_ENV || 'development') as 'development' | 'production' | 'test';
-  const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN || '';
-  const ERROR_ENDPOINT = process.env.NEXT_PUBLIC_ERROR_ENDPOINT || '';
+  const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID?.trim() ?? '';
+  const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() ?? '';
+  const SITE_URL = rawSiteUrl.replace(/\/$/, '');
+  const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN?.trim() ?? '';
+  const ERROR_ENDPOINT = process.env.NEXT_PUBLIC_ERROR_ENDPOINT?.trim() ?? '';
 
   // Validation for production environment
   if (NODE_ENV === 'production') {
@@ -32,7 +33,7 @@ function validateEnv(): EnvConfig {
     } else if (!GA_TRACKING_ID.match(/^G-[A-Z0-9]+$/)) {
       console.warn(`⚠️  GA_TRACKING_ID has invalid format: ${GA_TRACKING_ID}`);
     }
-    
+
     if (!SITE_URL) {
       errors.push('NEXT_PUBLIC_SITE_URL is required in production!');
     } else if (!SITE_URL.match(/^https?:\/\/.+/)) {
@@ -48,6 +49,10 @@ function validateEnv(): EnvConfig {
     if (errors.length > 0) {
       throw new Error(`Environment validation failed:\n${errors.join('\n')}`);
     }
+  }
+
+  if (!SITE_URL && NODE_ENV !== 'development') {
+    throw new Error('NEXT_PUBLIC_SITE_URL must be configured outside of development.');
   }
 
   return {

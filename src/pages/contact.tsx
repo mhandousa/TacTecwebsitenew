@@ -67,23 +67,49 @@ export default function ContactPage() {
         request_type: data.requestType,
       });
 
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
-      const result = await response.json();
+        const responseClone = response.clone();
+        const contentType =
+          responseClone.headers.get("content-type") ||
+          response.headers.get("content-type") ||
+          "";
 
-      if (response.ok && result.success) {
-        const apiMessage =
-          typeof result.message === "string" ? result.message.trim() : "";
-        const successMessage =
-          apiMessage && apiMessage !== t("status.apiDefaults.success")
-            ? apiMessage
-            : t("status.success");
+        let result: unknown = null;
+
+        if (contentType.includes("application/json")) {
+          try {
+            result = await responseClone.json();
+          } catch (parseError) {
+            console.error("Failed to parse contact API response JSON", parseError);
+          }
+        }
+
+        const successResult =
+          result &&
+          typeof result === "object" &&
+          "success" in result &&
+          (result as { success?: boolean }).success;
+
+        if (response.ok && successResult) {
+          const messageValue =
+            result &&
+            typeof result === "object" &&
+            "message" in result &&
+            typeof (result as { message?: string }).message === "string"
+              ? (result as { message?: string }).message?.trim() ?? ""
+              : "";
+          const apiMessage = messageValue;
+          const successMessage =
+            apiMessage && apiMessage !== t("status.apiDefaults.success")
+              ? apiMessage
+              : t("status.success");
 
         setSubmitStatus("success");
         setSubmitMessage(successMessage);
@@ -106,18 +132,23 @@ export default function ContactPage() {
           });
         }, 100);
       } else {
-        const apiError =
-          result && typeof result.error === "string"
-            ? result.error.trim()
-            : "";
-        const errorMessage =
-          apiError && apiError !== t("status.apiDefaults.error")
-            ? apiError
-            : t("status.error");
+          const apiError =
+            result &&
+            typeof result === "object" &&
+            "error" in result &&
+            typeof (result as { error?: string }).error === "string"
+              ? (result as { error?: string }).error?.trim() ?? ""
+              : "";
+          const errorMessage =
+            apiError && apiError !== t("status.apiDefaults.error")
+              ? apiError
+              : response.ok
+                ? t("status.error")
+                : response.statusText || t("status.error");
 
-        throw new Error(errorMessage);
-      }
-    } catch (error) {
+          throw new Error(errorMessage);
+        }
+      } catch (error) {
       console.error("Form submission error:", error);
       setSubmitStatus("error");
       const caughtMessage =

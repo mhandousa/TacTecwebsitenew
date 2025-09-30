@@ -10,7 +10,6 @@ export type AnalyticsEvent =
   | 'demo_request'
   | 'language_switch'
   | 'cta_click'
-  | 'scroll_depth'
   | 'error';
 
 // Strict event parameters
@@ -81,8 +80,3 @@ export const trackFormSubmit = (formType: string, requestType?: string): void =>
   });
 };
 
-export const trackScrollDepth = (depth: number): void => {
-  trackEvent('scroll_depth', {
-    depth,
-  });
-};

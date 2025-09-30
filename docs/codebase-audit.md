@@ -1,43 +1,36 @@
 # Codebase Review & Audit Report
 
 ## Overview
-- **Date**: 2025-10-27
-- **Environment**: Static review of the checked-in sources (no network access, tests not executed).
-- **Scope**: High-level architecture, security posture, data privacy handling, and maintainability of the Next.js marketing site.
+- **Date**: 2025-02-14
+- **Scope**: Static inspection of the checked-in Next.js marketing site (no network access or runtime instrumentation during this review).
+- **Repository focus**: Operational readiness of the public contact flow, configuration hygiene, and security posture of shared infrastructure.
 
-## Application Architecture Snapshot
-- The site is implemented with Next.js 14, React 18, next-intl for localisation, and Tailwind CSS for styling, as defined in `package.json`. 【F:package.json†L1-L78】
-- Global app composition lives in `src/pages/_app.tsx`, where translations, the error boundary, and cookie consent are wired together. 【F:src/pages/_app.tsx†L1-L91】
-- Core landing experience and associated UI primitives are delivered through `TacTecLanding` and supporting components in `src/components`. 【F:src/components/TacTecLanding.tsx†L1-L120】
-- Contact workflows are handled via a Next.js API route backed by an in-memory or Upstash-powered rate limiter. 【F:src/pages/api/contact.ts†L1-L120】【F:src/lib/ratelimit.ts†L1-L120】
+## Recognised Strengths
+- **Hardened edge defaults** – Strict-Transport-Security, frame busting headers, and a locked-down image proxy that now disallows inline SVG execution provide a strong security baseline without per-route tuning.【F:next.config.js†L14-L58】
+- **Consent-aware telemetry** – Google Analytics only initialises after the cookie banner records acceptance, and subsequent route tracking remains gated behind that consent flag so anonymous visitors are not followed inadvertently.【F:src/pages/_app.tsx†L18-L109】
+- **Fail-closed rate limiting** – Upstash credentials are now required for production boots and runtime failures surface immediately, ensuring the contact API keeps durable throttling in front of spam bursts rather than silently downgrading to memory state.【F:src/lib/ratelimit.ts†L117-L158】
+- **Configurable CORS enforcement** – Allowed origins are derived from configuration (including `CONTACT_ALLOWED_ORIGINS` and the primary site URL variants), giving each environment a zero-code pathway to adjust who can call the contact endpoint.【F:src/pages/api/contact.ts†L90-L215】
 
-## Notable Strengths
-1. **Consent-aware analytics loading** – Google Analytics only boots after a user explicitly accepts the cookie banner, and route change tracking is disabled without consent. 【F:src/pages/_app.tsx†L12-L73】【F:src/components/CookieConsent.tsx†L1-L76】
-2. **Runtime environment validation** – `src/config/env.ts` enforces URL formats and highlights missing production configuration early in the boot process. 【F:src/config/env.ts†L1-L68】
-3. **Defensive analytics helpers** – `src/utils/analytics.ts` guards all gtag calls behind runtime checks and typed event payloads to prevent noisy errors when analytics is unavailable. 【F:src/utils/analytics.ts†L1-L64】
-4. **Rate limiting abstraction** – The contact endpoint can seamlessly upgrade from an in-memory limiter to an Upstash Redis-backed implementation without code changes. 【F:src/lib/ratelimit.ts†L1-L120】
+## Risk Register
+### High Severity
+- _None observed after the applied remediations._
 
-## Findings & Recommendations
-1. **Durable rate limiting is optional, not enforced**  
-   When `UPSTASH_REDIS_REST_URL`/`_TOKEN` are missing, the API quietly falls back to an in-memory limiter that resets on process restart, which is insufficient for production traffic or multi-instance deployments. Promote configuration failures to hard errors (or at least critical logs) outside development, and add observability around limiter downgrades. 【F:src/lib/ratelimit.ts†L69-L118】
+### Medium Severity
+1. **Contact endpoint still lacks human verification**
+   The server trusts any client that can reach the API over HTTPS; there is no CAPTCHA, proof-of-work, or honeypot field beyond IP-based throttling. Persistent bots can still cycle IPs or operate below the limit, so layering behavioural or challenge-based protections will reduce spam risk before CRM integrations arrive.【F:src/pages/api/contact.ts†L173-L215】
 
-2. **Structured data risks inaccurate claims**  
-   The JSON-LD schema advertises a perfect "price" of 0 USD and a 4.8/50 review aggregate without a backend source of truth. Search engines typically require verifiable ratings; consider removing or dynamically sourcing this metadata to avoid manual penalties. 【F:src/components/StructuredData.tsx†L1-L56】
+### Low Severity
+1. **Environment contracts need documentation**
+   The stricter runtime checks and origin derivation lean on env vars such as `NEXT_PUBLIC_SITE_URL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, and `CONTACT_ALLOWED_ORIGINS`. Missing runbook guidance could stall deployments or lead to emergency reconfigurations when boot validation starts failing.【F:src/config/env.ts†L19-L89】【F:src/pages/api/contact.ts†L104-L142】
+2. **Error telemetry remains best-effort**
+   Errors are logged and optionally forwarded to a custom endpoint, but without mandatory destinations or structured production logging the signal will stay console-bound. Establishing a required sink (Sentry or similar) keeps incident response timely.【F:src/utils/errorReporting.ts†L17-L88】
 
-3. **Contact form response handling assumes JSON**  
-   The frontend blindly calls `response.json()` even on error branches, so a non-JSON upstream response would trigger an unhandled exception before the catch block runs. Wrap parsing in a try/catch or gate it behind a `Content-Type` check for resilience. 【F:src/pages/contact.tsx†L42-L109】
-
-4. **PII governance for contact submissions**  
-   Although the API logs only metadata, the comment notes future database/CRM integrations. Define a data-retention policy and ensure any persistence layer redacts or encrypts sensitive fields before shipping. 【F:src/pages/api/contact.ts†L89-L149】
-
-5. **Environment defaults mask misconfiguration**  
-   Falling back to `http://localhost:3000` for `SITE_URL` keeps builds green but can ship incorrect canonical links in production if the variable is omitted. Fail fast for missing `NEXT_PUBLIC_SITE_URL` regardless of environment, or gate the fallback behind explicit development checks. 【F:src/config/env.ts†L41-L67】
-
-6. **Analytics event coverage**  
-   CTA/button clicks are tracked, but long-form scroll or section visibility metrics rely on `trackScrollDepth` without any caller in the repo. Audit analytics requirements to avoid silent gaps or dead code. 【F:src/utils/analytics.ts†L1-L64】【F:src/components/TacTecLanding.tsx†L1-L120】
+## Operational Opportunities
+- **Capture configuration runbooks** – Enumerate required environment variables (GA, Sentry/error endpoints, Upstash credentials, trusted proxies, and `CONTACT_ALLOWED_ORIGINS`) so teams know which knobs must be set per environment.【F:src/config/env.ts†L19-L89】【F:src/pages/api/contact.ts†L104-L215】
+- **Automate the contact flow checks** – A small Playwright or integration suite that exercises happy paths, schema validation failures, rate-limit exhaustion, and CORS preflights would guard regressions before marketing pushes.【F:package.json†L17-L42】【F:src/pages/api/contact.ts†L144-L215】
+- **Broaden observability** – Emit structured logs or metrics when the limiter fails, when submissions succeed, and when error reports are captured to move beyond console scraping for operational awareness.【F:src/lib/ratelimit.ts†L117-L158】【F:src/pages/api/contact.ts†L192-L215】【F:src/utils/errorReporting.ts†L17-L88】
 
 ## Suggested Next Steps
-- Add automated API tests around the contact endpoint (including malformed JSON and rate limit exhaustion) to guard regression risk. 【F:src/pages/api/contact.ts†L1-L149】
-- Document required environment variables and recommended operational settings alongside deployment runbooks so misconfiguration is caught before release. 【F:src/config/env.ts†L1-L67】
-- Schedule a follow-up privacy review once persistence or analytics expansions are implemented to ensure data handling stays compliant.
-
+1. Introduce a human verification layer (CAPTCHA, honeypot, or rate-limit-backed challenge) ahead of wiring the form into downstream systems.【F:src/pages/api/contact.ts†L173-L215】
+2. Stand up automated tests that cover the full contact submission lifecycle, including CORS checks and rate-limit boundaries.【F:src/pages/api/contact.ts†L144-L215】
+3. Publish and maintain environment setup guides reflecting the new required variables and monitoring expectations.【F:src/config/env.ts†L19-L89】【F:src/pages/api/contact.ts†L104-L142】
