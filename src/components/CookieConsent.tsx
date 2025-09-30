@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-export default function CookieConsent() {
+type ConsentStatus = 'accepted' | 'declined';
+
+interface CookieConsentProps {
+  onConsentChange?: (status: ConsentStatus) => void;
+}
+
+export default function CookieConsent({ onConsentChange }: CookieConsentProps) {
   const [showBanner, setShowBanner] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -32,17 +38,24 @@ export default function CookieConsent() {
     }
   };
 
+  const notifyConsentChange = (status: ConsentStatus) => {
+    if (typeof onConsentChange === 'function') {
+      onConsentChange(status);
+    }
+  };
+
   const handleAccept = () => {
     if (typeof window === 'undefined') return;
-    
+
     localStorage.setItem('cookie-consent', 'accepted');
     enableAnalytics();
     setShowBanner(false);
+    notifyConsentChange('accepted');
   };
 
   const handleDecline = () => {
     if (typeof window === 'undefined') return;
-    
+
     localStorage.setItem('cookie-consent', 'declined');
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('consent', 'update', {
@@ -51,6 +64,7 @@ export default function CookieConsent() {
       });
     }
     setShowBanner(false);
+    notifyConsentChange('declined');
   };
 
   // Don't render until mounted
