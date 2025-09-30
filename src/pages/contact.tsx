@@ -1,26 +1,32 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { GetStaticProps } from "next";
+import { useTranslations } from "next-intl";
 import { SITE_URL } from "@/config/env";
 import { trackEvent } from "@/utils/analytics";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
-const contactFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  club: z.string().min(2, "Club name must be at least 2 characters"),
-  role: z.string().min(1, "Please select your role"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-  requestType: z.enum(["demo", "sales", "support", "general"]),
-});
-
-type ContactFormData = z.infer<typeof contactFormSchema>;
+const buildContactFormSchema = (translate: (key: string) => string) =>
+  z.object({
+    name: z.string().min(2, translate("validation.nameMin")),
+    email: z.string().email(translate("validation.email")),
+    club: z.string().min(2, translate("validation.clubMin")),
+    role: z.string().min(1, translate("validation.roleMin")),
+    message: z.string().min(10, translate("validation.messageMin")),
+    requestType: z.enum(["demo", "sales", "support", "general"]),
+  });
 
 export default function ContactPage() {
+  const t = useTranslations("contact");
+  const tFooter = useTranslations("footer");
+
+  const contactFormSchema = useMemo(() => buildContactFormSchema(t), [t]);
+  type ContactFormData = z.infer<typeof contactFormSchema>;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "success" | "error"
@@ -72,10 +78,15 @@ export default function ContactPage() {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        const apiMessage =
+          typeof result.message === "string" ? result.message.trim() : "";
+        const successMessage =
+          apiMessage && apiMessage !== t("status.apiDefaults.success")
+            ? apiMessage
+            : t("status.success");
+
         setSubmitStatus("success");
-        setSubmitMessage(
-          result.message || "Your message has been sent successfully!",
-        );
+        setSubmitMessage(successMessage);
         reset();
 
         trackEvent("form_submit_success", {
@@ -95,21 +106,38 @@ export default function ContactPage() {
           });
         }, 100);
       } else {
-        throw new Error(result.error || "Failed to send message");
+        const apiError =
+          result && typeof result.error === "string"
+            ? result.error.trim()
+            : "";
+        const errorMessage =
+          apiError && apiError !== t("status.apiDefaults.error")
+            ? apiError
+            : t("status.error");
+
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Form submission error:", error);
       setSubmitStatus("error");
-      setSubmitMessage(
-        error instanceof Error
+      const caughtMessage =
+        error instanceof Error && error.message
           ? error.message
-          : "Something went wrong. Please try again or email us directly.",
-      );
+          : "";
+      const localizedMessage =
+        caughtMessage && caughtMessage !== t("status.apiDefaults.error")
+          ? caughtMessage
+          : t("status.error");
+
+      setSubmitMessage(localizedMessage);
 
       trackEvent("form_submit_error", {
         form_type: "contact",
         request_type: data.requestType,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error:
+          error instanceof Error && error.message
+            ? error.message
+            : "Unknown error",
       });
     } finally {
       setIsSubmitting(false);
@@ -119,19 +147,16 @@ export default function ContactPage() {
   return (
     <>
       <Head>
-        <title>Contact - TACTEC</title>
-        <meta
-          name="description"
-          content="Get in touch with TACTEC team for demos and inquiries. Transform your football club operations with our professional platform."
-        />
+        <title>{t("meta.title")}</title>
+        <meta name="description" content={t("meta.description")} />
         <link rel="canonical" href={`${SITE_URL}/contact`} />
         <meta
           property="og:title"
-          content="Contact TACTEC - Football Club Management Platform"
+          content={t("meta.ogTitle")}
         />
         <meta
           property="og:description"
-          content="Request a demo or get in touch with our team to learn how TACTEC can transform your club operations."
+          content={t("meta.ogDescription")}
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/contact`} />
@@ -151,7 +176,7 @@ export default function ContactPage() {
               href="/"
               className="text-gray-600 dark:text-gray-300 hover:text-sky-600 transition"
             >
-              ← Back to Home
+              {t("nav.back")}
             </Link>
             <LanguageSwitcher />
           </div>
@@ -169,11 +194,10 @@ export default function ContactPage() {
             {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                Get in Touch
+                {t("header.title")}
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-400">
-                Ready to transform your club? Request a demo or contact our
-                team.
+                {t("header.subtitle")}
               </p>
             </div>
 
@@ -197,16 +221,24 @@ export default function ContactPage() {
                 {/* Request Type */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Request Type *
+                    {t("form.requestType.label")}
                   </label>
                   <select
                     {...register("requestType")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   >
-                    <option value="demo">Request Demo</option>
-                    <option value="sales">Sales Inquiry</option>
-                    <option value="support">Support</option>
-                    <option value="general">General Question</option>
+                    <option value="demo">
+                      {t("form.requestType.options.demo")}
+                    </option>
+                    <option value="sales">
+                      {t("form.requestType.options.sales")}
+                    </option>
+                    <option value="support">
+                      {t("form.requestType.options.support")}
+                    </option>
+                    <option value="general">
+                      {t("form.requestType.options.general")}
+                    </option>
                   </select>
                   {errors.requestType && (
                     <p className="mt-1 text-sm text-red-600">
@@ -218,13 +250,13 @@ export default function ContactPage() {
                 {/* Name */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Your Name *
+                    {t("form.name.label")}
                   </label>
                   <input
                     type="text"
                     {...register("name")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                    placeholder="John Doe"
+                    placeholder={t("form.name.placeholder")}
                   />
                   {errors.name && (
                     <p className="mt-1 text-sm text-red-600">
@@ -236,13 +268,13 @@ export default function ContactPage() {
                 {/* Email */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Email Address *
+                    {t("form.email.label")}
                   </label>
                   <input
                     type="email"
                     {...register("email")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                    placeholder="john@club.com"
+                    placeholder={t("form.email.placeholder")}
                   />
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-600">
@@ -254,13 +286,13 @@ export default function ContactPage() {
                 {/* Club */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Club/Organization *
+                    {t("form.club.label")}
                   </label>
                   <input
                     type="text"
                     {...register("club")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                    placeholder="FC Example"
+                    placeholder={t("form.club.placeholder")}
                   />
                   {errors.club && (
                     <p className="mt-1 text-sm text-red-600">
@@ -272,13 +304,13 @@ export default function ContactPage() {
                 {/* Role */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Your Role *
+                    {t("form.role.label")}
                   </label>
                   <input
                     type="text"
                     {...register("role")}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                    placeholder="Manager, Coach, Director, etc."
+                    placeholder={t("form.role.placeholder")}
                   />
                   {errors.role && (
                     <p className="mt-1 text-sm text-red-600">
@@ -290,13 +322,13 @@ export default function ContactPage() {
                 {/* Message */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Message *
+                    {t("form.message.label")}
                   </label>
                   <textarea
                     {...register("message")}
                     rows={6}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
-                    placeholder="Tell us about your needs..."
+                    placeholder={t("form.message.placeholder")}
                   />
                   {errors.message && (
                     <p className="mt-1 text-sm text-red-600">
@@ -332,10 +364,10 @@ export default function ContactPage() {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         />
                       </svg>
-                      Sending...
+                      {t("form.submit.loading")}
                     </>
                   ) : (
-                    "Send Message"
+                    t("form.submit.default")
                   )}
                 </button>
               </form>
@@ -359,12 +391,12 @@ export default function ContactPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="font-semibold mb-2">Email</h3>
+                <h3 className="font-semibold mb-2">{t("info.email.label")}</h3>
                 <a
                   href="mailto:info@tactec.club"
                   className="text-sky-600 hover:underline"
                 >
-                  info@tactec.club
+                  {t("info.email.value")}
                 </a>
               </div>
 
@@ -384,9 +416,9 @@ export default function ContactPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="font-semibold mb-2">Response Time</h3>
+                <h3 className="font-semibold mb-2">{t("info.response.label")}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Within 24 hours
+                  {t("info.response.value")}
                 </p>
               </div>
 
@@ -406,9 +438,9 @@ export default function ContactPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="font-semibold mb-2">Languages</h3>
+                <h3 className="font-semibold mb-2">{t("info.languages.label")}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  8 languages supported
+                  {t("info.languages.value")}
                 </p>
               </div>
             </div>
@@ -419,10 +451,8 @@ export default function ContactPage() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8">
         <div className="container mx-auto px-6 text-center">
-          <p className="text-sm">© Ventio. All rights reserved.</p>
-          <p className="mt-2 text-sky-400 text-sm">
-            Made with care for football.
-          </p>
+          <p className="text-sm">{tFooter("rights")}</p>
+          <p className="mt-2 text-sky-400 text-sm">{tFooter("made")}</p>
         </div>
       </footer>
     </>
