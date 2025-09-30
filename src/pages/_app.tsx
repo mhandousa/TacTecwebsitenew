@@ -99,7 +99,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           </>
         )}
         
-        <CookieConsent />
+        <CookieConsent
+          onConsentChange={(status) => {
+            setConsentGiven(status === "accepted");
+          }}
+        />
         <Component {...pageProps} />
       </NextIntlClientProvider>
     </ErrorBoundary>
