@@ -27,8 +27,48 @@ export default function TacTecLanding() {
     }
   };
 
+  const heroStatKeys = ["injury", "sync", "adoption"] as const;
+  const solutionPillarKeys = ["connect", "coordinate", "measure"] as const;
+  const solutionOutcomeKeys = ["clarity", "speed", "confidence"] as const;
+  const featureKeys = ["medical", "performance", "tactical", "operations"] as const;
+  const highlightKeys = ["mobile", "security", "support"] as const;
+  const techPillarKeys = ["cloud", "analytics", "access"] as const;
+  const metricsKeys = ["satisfaction", "reporting", "recovery"] as const;
+  const testimonialKeys = ["director", "coach"] as const;
+
+  const featureIcons: Record<typeof featureKeys[number], string> = {
+    medical: "🩺",
+    performance: "📊",
+    tactical: "🧠",
+    operations: "🛠️",
+  };
+
+  const techIcons: Record<typeof techPillarKeys[number], string> = {
+    cloud: "☁️",
+    analytics: "📈",
+    access: "🌍",
+  };
+
+  const solutionIcons: Record<typeof solutionPillarKeys[number], string> = {
+    connect: "🤝",
+    coordinate: "🗂️",
+    measure: "📏",
+  };
+
+  const metricStyles: Record<typeof metricsKeys[number], string> = {
+    satisfaction: "from-sky-500/10 to-sky-500/5 dark:from-sky-400/10 dark:to-sky-500/5",
+    reporting: "from-emerald-500/10 to-emerald-500/5 dark:from-emerald-400/10 dark:to-emerald-500/5",
+    recovery: "from-purple-500/10 to-purple-500/5 dark:from-purple-400/10 dark:to-purple-500/5",
+  };
+
   return (
     <>
+      <a
+        href="#content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:rounded-md focus:bg-sky-600 focus:text-white"
+      >
+        {t("layout.skip")}
+      </a>
       <Head>
         <title>TACTEC – Revolutionising Football Club Management</title>
         <meta
@@ -55,7 +95,10 @@ export default function TacTecLanding() {
       <StructuredData type="softwareApplication" />
 
       {/* Navigation */}
-      <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b sticky top-0 z-50">
+      <nav
+        className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b shadow-sm sticky top-0 z-50"
+        aria-label="Primary"
+      >
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link
@@ -142,9 +185,12 @@ export default function TacTecLanding() {
 
       <main id="content" tabIndex={-1}>
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-20">
+        <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 via-white to-sky-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 py-24">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-sky-500/20 blur-3xl" />
+          </div>
           <div className="container mx-auto px-6">
-            <div className="max-w-4xl mx-auto text-center">
+            <div className="max-w-4xl mx-auto text-center relative">
               <p className="text-sky-600 font-semibold mb-4">
                 {t("hero.trusted")}
               </p>
@@ -167,14 +213,38 @@ export default function TacTecLanding() {
                 </Link>
                 <Link
                   href="#features"
-                  className="border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-8 py-3 rounded-lg font-semibold transition"
+                  className="border border-gray-300 dark:border-gray-600 hover:border-sky-400 hover:bg-white/60 dark:hover:bg-gray-800 px-8 py-3 rounded-lg font-semibold transition"
                 >
                   {t("hero.cta.start")}
                 </Link>
+                <a
+                  href="#solution"
+                  className="inline-flex items-center justify-center gap-2 text-sky-600 font-semibold px-8 py-3 rounded-lg transition hover:text-sky-700"
+                >
+                  {t("hero.cta.learn")}
+                  <span aria-hidden="true">→</span>
+                </a>
               </div>
             </div>
 
-            <div className="mt-16 max-w-5xl mx-auto">
+            <div className="mt-12 grid gap-6 sm:grid-cols-3">
+              {heroStatKeys.map((key) => (
+                <div
+                  key={key}
+                  className="rounded-2xl border border-white/60 bg-white/80 px-6 py-5 text-left shadow-sm backdrop-blur dark:border-gray-700/60 dark:bg-gray-900/70"
+                >
+                  <p className="text-3xl font-bold text-sky-600">
+                    {t(`hero.stats.${key}.value`)}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    {t(`hero.stats.${key}.label`)}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-16 max-w-5xl mx-auto relative">
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sky-500/10 via-transparent to-sky-500/5 blur-2xl" aria-hidden="true" />
               <div className="relative rounded-lg overflow-hidden shadow-2xl">
                 <Image
                   src="/images/1_TacTec-Revolutionising-Football-Club-Management.webp"
@@ -238,7 +308,7 @@ export default function TacTecLanding() {
         </section>
 
         {/* Solution Section */}
-        <section id="solution" className="py-20 bg-gray-50 dark:bg-gray-800">
+        <section id="solution" className="py-24 bg-gray-50 dark:bg-gray-800">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
               <p className="text-sky-600 font-semibold mb-4">
@@ -249,11 +319,43 @@ export default function TacTecLanding() {
                 {t("solution.subtitle")}
               </p>
             </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              {solutionPillarKeys.map((key) => (
+                <div
+                  key={key}
+                  className="h-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900"
+                >
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-2xl">
+                    <span aria-hidden="true">{solutionIcons[key]}</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    {t(`solution.pillars.${key}.title`)}
+                  </h3>
+                  <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                    {t(`solution.pillars.${key}.desc`)}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-16 max-w-4xl mx-auto rounded-2xl border border-sky-100 bg-sky-50/60 p-8 text-center dark:border-sky-500/30 dark:bg-sky-500/10">
+              <h3 className="text-2xl font-semibold text-sky-700 dark:text-sky-300">
+                {t("solution.outcome.title")}
+              </h3>
+              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                {solutionOutcomeKeys.map((key) => (
+                  <p key={key} className="text-sm text-gray-700 dark:text-gray-200">
+                    {t(`solution.outcome.items.${key}`)}
+                  </p>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-20 bg-white dark:bg-gray-900">
+        <section id="features" className="py-24 bg-white dark:bg-gray-900">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
               <p className="text-sky-600 font-semibold mb-4">
@@ -264,11 +366,51 @@ export default function TacTecLanding() {
                 {t("features.subtitle")}
               </p>
             </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {featureKeys.map((key) => (
+                <div
+                  key={key}
+                  className="flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
+                >
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-2xl">
+                    <span aria-hidden="true">{featureIcons[key]}</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {t(`features.categories.${key}.title`)}
+                  </h3>
+                  <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                    {t(`features.categories.${key}.desc`)}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-14 grid gap-6 lg:grid-cols-3">
+              <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-sky-500 to-sky-600 p-8 text-white shadow-xl">
+                <h3 className="text-2xl font-semibold">{t("features.highlights.title")}</h3>
+                <p className="mt-4 text-sm text-sky-100">
+                  {t("challenge.subtitle")}
+                </p>
+              </div>
+              <div className="lg:col-span-2 grid gap-4 sm:grid-cols-3">
+                {highlightKeys.map((key) => (
+                  <div
+                    key={key}
+                    className="rounded-2xl border border-gray-200 bg-white p-6 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                  >
+                    <p className="font-semibold text-gray-900 dark:text-gray-100">
+                      {t(`features.highlights.items.${key}`)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Tech Section */}
-        <section id="tech" className="py-20 bg-gray-50 dark:bg-gray-800">
+        <section id="tech" className="py-24 bg-gray-50 dark:bg-gray-800">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
               <p className="text-sky-600 font-semibold mb-4">
@@ -278,6 +420,90 @@ export default function TacTecLanding() {
               <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
                 {t("tech.subtitle")}
               </p>
+            </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              {techPillarKeys.map((key) => (
+                <div
+                  key={key}
+                  className="flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900"
+                >
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-2xl">
+                    <span aria-hidden="true">{techIcons[key]}</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {t(`tech.pillars.${key}.title`)}
+                  </h3>
+                  <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                    {t(`tech.pillars.${key}.desc`)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Metrics Section */}
+        <section className="py-24 bg-white dark:bg-gray-900">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl text-center mx-auto">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+                {t("metrics.title")}
+              </h2>
+              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+                {t("metrics.subtitle")}
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              {metricsKeys.map((key) => (
+                <div
+                  key={key}
+                  className={`relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900`}
+                >
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${metricStyles[key]} opacity-80`}
+                    aria-hidden="true"
+                  />
+                  <div className="relative">
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                      {t(`metrics.items.${key}.value`)}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-sky-700 dark:text-sky-300">
+                      {t(`metrics.items.${key}.label`)}
+                    </p>
+                    <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">
+                      {t(`metrics.items.${key}.desc`)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="py-24 bg-gradient-to-b from-gray-900 via-gray-900 to-black text-white">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl text-center mx-auto">
+              <p className="text-sky-400 font-semibold mb-4">{t("testimonials.title")}</p>
+              <h2 className="text-3xl sm:text-4xl font-bold">{t("testimonials.subtitle")}</h2>
+            </div>
+
+            <div className="mt-12 grid gap-8 lg:grid-cols-2">
+              {testimonialKeys.map((key) => (
+                <figure
+                  key={key}
+                  className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur"
+                >
+                  <blockquote className="text-lg leading-relaxed text-gray-100">
+                    “{t(`testimonials.quotes.${key}.quote`)}”
+                  </blockquote>
+                  <figcaption className="mt-6 text-sm uppercase tracking-wide text-sky-200">
+                    {t(`testimonials.quotes.${key}.role`)}
+                  </figcaption>
+                </figure>
+              ))}
             </div>
           </div>
         </section>
@@ -297,6 +523,12 @@ export default function TacTecLanding() {
                 >
                   {t("cta.buttons.demo")}
                 </Link>
+                <a
+                  href="/docs/tactec-product-overview.pdf"
+                  className="inline-flex items-center justify-center rounded-lg border border-white/30 px-8 py-3 font-semibold text-white transition hover:bg-white/10"
+                >
+                  {t("cta.buttons.tour")}
+                </a>
               </div>
             </div>
           </div>
