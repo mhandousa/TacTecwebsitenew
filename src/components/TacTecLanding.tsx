@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
 import StructuredData from "./StructuredData";
+import TacTecLogo from "./TacTecLogo";
 import { SITE_URL } from "@/config/env";
 import { trackEvent } from "@/utils/analytics";
 
@@ -103,9 +104,11 @@ export default function TacTecLanding() {
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="text-2xl font-bold text-sky-600 hover:text-sky-700 transition"
+              className="flex items-center text-sky-600 transition hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
+              aria-label="TACTEC homepage"
             >
-              TACTEC
+              <span className="sr-only">TACTEC</span>
+              <TacTecLogo className="h-10 w-auto" />
             </Link>
             <div className="flex items-center gap-4">
               <div className="hidden md:flex gap-6">
