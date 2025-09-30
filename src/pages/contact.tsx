@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { SITE_URL } from "@/config/env";
 import { trackEvent } from "@/utils/analytics";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import BrandLink from "@/components/BrandLink";
 
 const buildContactFormSchema = (translate: (key: string) => string) =>
   z.object({
@@ -192,12 +193,7 @@ export default function ContactPage() {
       {/* Navigation */}
       <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <Link
-            href="/"
-            className="text-2xl font-bold text-sky-600 hover:text-sky-700 transition"
-          >
-            TACTEC
-          </Link>
+          <BrandLink />
           <div className="flex items-center gap-6">
             <Link
               href="/"

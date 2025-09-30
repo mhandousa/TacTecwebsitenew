@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import BrandLink from "./BrandLink";
 import LanguageSwitcher from "./LanguageSwitcher";
 import StructuredData from "./StructuredData";
 import { SITE_URL } from "@/config/env";
@@ -135,12 +136,7 @@ export default function TacTecLanding() {
       >
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="text-2xl font-bold text-sky-600 hover:text-sky-700 transition"
-            >
-              TACTEC
-            </Link>
+            <BrandLink />
             <div className="flex items-center gap-4">
               <div className="hidden md:flex gap-6">
                 <a href="#features" className="hover:text-sky-600 transition">

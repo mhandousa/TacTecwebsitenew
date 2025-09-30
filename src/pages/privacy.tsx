@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { SITE_URL } from "@/config/env";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import BrandLink from "@/components/BrandLink";
 
 export default function PrivacyPage() {
   return (
@@ -26,9 +27,7 @@ export default function PrivacyPage() {
       {/* Navigation */}
       <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-sky-600">
-            TACTEC
-          </Link>
+          <BrandLink />
           <div className="flex items-center gap-6">
             <Link href="/" className="hover:text-sky-600 transition">
               Back to Home
