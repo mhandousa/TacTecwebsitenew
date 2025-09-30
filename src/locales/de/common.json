@@ -65,7 +65,8 @@
     "subtitle": "Fordern Sie eine Live-Demo an oder testen Sie die Spieler-App.",
     "buttons": {
       "demo": "Live-Demo anfordern",
-      "app": "Spieler-App testen"
+      "app": "Spieler-App testen",
+      "tour": "Produktübersicht herunterladen"
     }
   },
   "footer": {

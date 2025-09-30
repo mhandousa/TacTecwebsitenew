@@ -65,7 +65,8 @@
     "subtitle": "Solicite una demostración en vivo o pruebe la aplicación para jugadores.",
     "buttons": {
       "demo": "Solicitar Demostración en Vivo",
-      "app": "Probar la App del Jugador"
+      "app": "Probar la App del Jugador",
+      "tour": "Descargar Resumen del Producto"
     }
   },
   "footer": {
