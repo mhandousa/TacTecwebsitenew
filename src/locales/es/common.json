@@ -135,6 +135,7 @@
     "status": {
       "success": "Your message has been sent successfully!",
       "error": "Something went wrong. Please try again or email us directly.",
+      "rateLimited": "Estás enviando mensajes demasiado rápido. Espera un minuto antes de intentarlo de nuevo.",
       "apiDefaults": {
         "success": "Your message has been sent successfully!",
         "error": "Failed to send message"

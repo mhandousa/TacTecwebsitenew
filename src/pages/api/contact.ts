@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { ratelimit } from '@/lib/ratelimit';
+import { isIP } from 'net';
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -13,9 +14,16 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
+type ErrorCode =
+  | 'RATE_LIMITED'
+  | 'VALIDATION_ERROR'
+  | 'METHOD_NOT_ALLOWED'
+  | 'SERVER_ERROR';
+
 interface ApiResponse {
   success?: boolean;
   error?: string;
+  errorCode?: ErrorCode;
   message?: string;
   rateLimit?: {
     remaining: number;
@@ -23,10 +31,66 @@ interface ApiResponse {
   };
 }
 
+function normalizeIp(ip: string | undefined | null): string | null {
+  if (!ip) {
+    return null;
+  }
+
+  // Handle IPv6 mapped IPv4 addresses (e.g. ::ffff:127.0.0.1)
+  const mappedMatch = ip.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  if (mappedMatch) {
+    return mappedMatch[1];
+  }
+
+  return ip;
+}
+
+function getTrustedProxies(): Set<string> {
+  const raw = process.env.TRUSTED_PROXY_IPS;
+  const defaults = ['127.0.0.1', '::1'];
+
+  if (!raw) {
+    return new Set(defaults);
+  }
+
+  return new Set(
+    raw
+      .split(',')
+      .map(value => normalizeIp(value.trim()))
+      .filter((value): value is string => Boolean(value)),
+  );
+}
+
 function getClientIp(req: NextApiRequest): string {
-  const forwarded = req.headers['x-forwarded-for'];
-  const ip = typeof forwarded === 'string' ? forwarded.split(',')[0] : req.socket.remoteAddress;
-  return ip || 'unknown';
+  const trustedProxies = getTrustedProxies();
+  const remoteAddress = normalizeIp(req.socket.remoteAddress);
+
+  if (remoteAddress && trustedProxies.has(remoteAddress)) {
+    const forwarded = req.headers['x-forwarded-for'];
+    const candidates: string[] = [];
+
+    if (typeof forwarded === 'string') {
+      candidates.push(...forwarded.split(',').map(ip => ip.trim()));
+    } else if (Array.isArray(forwarded)) {
+      candidates.push(...forwarded.flatMap(value => value.split(',')).map(ip => ip.trim()));
+    }
+
+    const realIp = candidates.find(ip => isIP(ip));
+    if (realIp) {
+      return normalizeIp(realIp) ?? 'unknown';
+    }
+
+    const realIpHeader = normalizeIp(Array.isArray(req.headers['x-real-ip']) ? req.headers['x-real-ip'][0] : req.headers['x-real-ip']);
+    if (realIpHeader) {
+      return realIpHeader;
+    }
+  }
+
+  if (remoteAddress) {
+    return remoteAddress;
+  }
+
+  return 'unknown';
 }
 
 export default async function handler(
@@ -45,10 +109,14 @@ export default async function handler(
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  
+
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Max-Age', '86400');
+
+  const existingVary = res.getHeader('Vary');
+  const varyHeader = Array.isArray(existingVary) ? existingVary.join(', ') : existingVary;
+  res.setHeader('Vary', varyHeader ? `${varyHeader}, Origin` : 'Origin');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -56,21 +124,28 @@ export default async function handler(
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.setHeader('Allow', 'POST, OPTIONS');
+    return res.status(405).json({ error: 'Method not allowed', errorCode: 'METHOD_NOT_ALLOWED' });
   }
 
   // Rate Limiting
   const clientIp = getClientIp(req);
-  const rateLimitResult = ratelimit.check(clientIp);
-  
+  const rateLimitResult = await ratelimit.check(clientIp);
+
   // Set rate limit headers
   res.setHeader('X-RateLimit-Limit', rateLimitResult.limit.toString());
   res.setHeader('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
   res.setHeader('X-RateLimit-Reset', rateLimitResult.reset.toString());
-  
+
   if (!rateLimitResult.success) {
-    return res.status(429).json({ 
+    if (rateLimitResult.reset > Date.now()) {
+      const retryAfterSeconds = Math.max(0, Math.ceil((rateLimitResult.reset - Date.now()) / 1000));
+      res.setHeader('Retry-After', retryAfterSeconds.toString());
+    }
+
+    return res.status(429).json({
       error: 'Too many requests. Please try again later.',
+      errorCode: 'RATE_LIMITED',
       rateLimit: {
         remaining: rateLimitResult.remaining,
         reset: rateLimitResult.reset,
@@ -81,16 +156,11 @@ export default async function handler(
   try {
     const data: ContactFormData = contactSchema.parse(req.body);
     
-    // Log the submission
-    console.log('📧 New TACTEC contact form submission:', {
+    // Log anonymised submission metadata for operational insight without PII exposure
+    console.info('📧 New TACTEC contact form submission received', {
       timestamp: new Date().toISOString(),
-      name: data.name,
-      email: data.email,
-      club: data.club,
-      role: data.role,
       requestType: data.requestType,
-      messagePreview: data.message.substring(0, 100) + (data.message.length > 100 ? '...' : ''),
-      ip: clientIp,
+      messageLength: data.message.length,
     });
 
     // In production, you would:
@@ -112,13 +182,15 @@ export default async function handler(
     console.error('❌ Contact form error:', error);
     
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ 
-        error: 'Please check your form data: ' + error.errors.map(e => e.message).join(', ')
+      return res.status(400).json({
+        error: 'Please check your form data: ' + error.errors.map(e => e.message).join(', '),
+        errorCode: 'VALIDATION_ERROR',
       });
     }
 
-    res.status(500).json({ 
-      error: 'We encountered a technical issue. Please try again or email us directly at info@tactec.club' 
+    res.status(500).json({
+      error: 'We encountered a technical issue. Please try again or email us directly at info@tactec.club',
+      errorCode: 'SERVER_ERROR',
     });
   }
 }

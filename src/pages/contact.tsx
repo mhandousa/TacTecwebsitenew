@@ -26,6 +26,16 @@ export default function ContactPage() {
 
   const contactFormSchema = useMemo(() => buildContactFormSchema(t), [t]);
   type ContactFormData = z.infer<typeof contactFormSchema>;
+  type ApiResponse = {
+    success?: boolean;
+    message?: string;
+    error?: string;
+    errorCode?: "RATE_LIMITED" | "VALIDATION_ERROR" | "METHOD_NOT_ALLOWED" | "SERVER_ERROR";
+    rateLimit?: {
+      remaining: number;
+      reset: number;
+    };
+  };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
@@ -75,9 +85,14 @@ export default function ContactPage() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      let result: ApiResponse | null = null;
+      try {
+        result = (await response.json()) as ApiResponse;
+      } catch (parseError) {
+        console.warn("Unable to parse contact API response as JSON", parseError);
+      }
 
-      if (response.ok && result.success) {
+      if (response.ok && result?.success) {
         const apiMessage =
           typeof result.message === "string" ? result.message.trim() : "";
         const successMessage =
@@ -106,16 +121,30 @@ export default function ContactPage() {
           });
         }, 100);
       } else {
-        const apiError =
-          result && typeof result.error === "string"
-            ? result.error.trim()
-            : "";
-        const errorMessage =
+        const apiError = result?.error?.trim() ?? "";
+
+        let derivedMessage = "";
+        switch (result?.errorCode) {
+          case "RATE_LIMITED":
+            derivedMessage = t("status.rateLimited");
+            break;
+          case "VALIDATION_ERROR":
+            derivedMessage = apiError;
+            break;
+          case "METHOD_NOT_ALLOWED":
+          case "SERVER_ERROR":
+            derivedMessage = t("status.error");
+            break;
+          default:
+            derivedMessage = "";
+        }
+
+        const fallbackMessage =
           apiError && apiError !== t("status.apiDefaults.error")
             ? apiError
             : t("status.error");
 
-        throw new Error(errorMessage);
+        throw new Error(derivedMessage || fallbackMessage);
       }
     } catch (error) {
       console.error("Form submission error:", error);
