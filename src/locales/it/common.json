@@ -7,7 +7,9 @@
     "tech": "Tecnologia",
     "pricing": "Prezzi",
     "contact": "Contatto",
-    "signin": "Accedi"
+    "signin": "Accedi",
+    "menu": "Apri menu",
+    "close": "Chiudi menu"
   },
   "hero": {
     "trusted": "Fidato da club e personale",

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Head from "next/head";
 import Image from "next/image";
@@ -9,9 +10,21 @@ import { trackEvent } from "@/utils/analytics";
 
 export default function TacTecLanding() {
   const t = useTranslations();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleCTAClick = (type: string) => {
     trackEvent("cta_click", { type });
+  };
+
+  const handleToggleMenu = () => {
+    setIsMenuOpen((prev) => !prev);
+  };
+
+  const handleMenuItemClick = (callback?: () => void) => () => {
+    setIsMenuOpen(false);
+    if (callback) {
+      callback();
+    }
   };
 
   return (
@@ -44,14 +57,14 @@ export default function TacTecLanding() {
       {/* Navigation */}
       <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <Link
               href="/"
               className="text-2xl font-bold text-sky-600 hover:text-sky-700 transition"
             >
               TACTEC
             </Link>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <div className="hidden md:flex gap-6">
                 <a href="#features" className="hover:text-sky-600 transition">
                   {t("nav.features")}
@@ -63,7 +76,65 @@ export default function TacTecLanding() {
                   {t("nav.contact")}
                 </Link>
               </div>
-              <LanguageSwitcher />
+              <div className="hidden md:block">
+                <LanguageSwitcher />
+              </div>
+              <button
+                type="button"
+                onClick={handleToggleMenu}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 transition hover:border-sky-400 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-sky-400 md:hidden"
+                aria-expanded={isMenuOpen}
+                aria-controls="primary-navigation"
+              >
+                <span className="sr-only">{isMenuOpen ? t("nav.close") : t("nav.menu")}</span>
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  {isMenuOpen ? (
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path d="M4 7h16M4 12h16M4 17h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div
+            id="primary-navigation"
+            className={`${isMenuOpen ? "mt-4 block" : "hidden"} md:hidden`}
+          >
+            <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+              <a
+                href="#features"
+                onClick={handleMenuItemClick()}
+                className="block text-base font-medium text-gray-700 transition hover:text-sky-600 dark:text-gray-100"
+              >
+                {t("nav.features")}
+              </a>
+              <a
+                href="#tech"
+                onClick={handleMenuItemClick()}
+                className="block text-base font-medium text-gray-700 transition hover:text-sky-600 dark:text-gray-100"
+              >
+                {t("nav.tech")}
+              </a>
+              <Link
+                href="/contact"
+                onClick={handleMenuItemClick()}
+                className="block text-base font-medium text-gray-700 transition hover:text-sky-600 dark:text-gray-100"
+              >
+                {t("nav.contact")}
+              </Link>
+              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <LanguageSwitcher />
+              </div>
             </div>
           </div>
         </div>
@@ -77,13 +148,13 @@ export default function TacTecLanding() {
               <p className="text-sky-600 font-semibold mb-4">
                 {t("hero.trusted")}
               </p>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
                 {t("hero.title")}{" "}
                 <span className="text-sky-600">
                   {t("hero.title_highlight")}
                 </span>
               </h1>
-              <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-8">
                 {t("hero.subtitle")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -127,15 +198,15 @@ export default function TacTecLanding() {
               <p className="text-sky-600 font-semibold mb-4">
                 {t("challenge.eyebrow")}
               </p>
-              <h2 className="text-4xl font-bold mb-4">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
                 {t("challenge.title")}
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-400">
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
                 {t("challenge.subtitle")}
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="grid gap-6 md:grid-cols-3 md:gap-8 max-w-6xl mx-auto">
               {["staff", "workflows", "insights"].map((item) => (
                 <div
                   key={item}
@@ -173,8 +244,8 @@ export default function TacTecLanding() {
               <p className="text-sky-600 font-semibold mb-4">
                 {t("solution.eyebrow")}
               </p>
-              <h2 className="text-4xl font-bold mb-4">{t("solution.title")}</h2>
-              <p className="text-xl text-gray-600 dark:text-gray-400">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">{t("solution.title")}</h2>
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
                 {t("solution.subtitle")}
               </p>
             </div>
@@ -188,8 +259,8 @@ export default function TacTecLanding() {
               <p className="text-sky-600 font-semibold mb-4">
                 {t("features.eyebrow")}
               </p>
-              <h2 className="text-4xl font-bold mb-4">{t("features.title")}</h2>
-              <p className="text-xl text-gray-600 dark:text-gray-400">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">{t("features.title")}</h2>
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
                 {t("features.subtitle")}
               </p>
             </div>
@@ -203,8 +274,8 @@ export default function TacTecLanding() {
               <p className="text-sky-600 font-semibold mb-4">
                 {t("tech.eyebrow")}
               </p>
-              <h2 className="text-4xl font-bold mb-4">{t("tech.title")}</h2>
-              <p className="text-xl text-gray-600 dark:text-gray-400">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">{t("tech.title")}</h2>
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
                 {t("tech.subtitle")}
               </p>
             </div>

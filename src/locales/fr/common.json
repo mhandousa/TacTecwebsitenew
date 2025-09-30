@@ -7,7 +7,9 @@
     "tech": "Technologie",
     "pricing": "Tarifs",
     "contact": "Contact",
-    "signin": "Se Connecter"
+    "signin": "Se Connecter",
+    "menu": "Ouvrir le menu",
+    "close": "Fermer le menu"
   },
   "hero": {
     "trusted": "Approuvé par les clubs et le personnel",

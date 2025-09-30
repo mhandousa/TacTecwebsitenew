@@ -7,7 +7,9 @@
     "tech": "Technology",
     "pricing": "Pricing",
     "contact": "Contact",
-    "signin": "Sign In"
+    "signin": "Sign In",
+    "menu": "Open menu",
+    "close": "Close menu"
   },
   "hero": {
     "trusted": "Trusted by clubs and staff",
