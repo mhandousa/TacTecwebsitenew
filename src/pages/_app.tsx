@@ -65,7 +65,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         timeZone="UTC"
         now={new Date()}
         defaultTranslationValues={{
-          br: (chunks) => <br />,
+          br: () => <br />,
         }}
         onError={(error) => {
           if (process.env.NODE_ENV === 'development') {

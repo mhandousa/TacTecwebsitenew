@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +21,6 @@ const contactFormSchema = z.object({
 type ContactFormData = z.infer<typeof contactFormSchema>;
 
 export default function ContactPage() {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
@@ -40,13 +38,16 @@ export default function ContactPage() {
   });
 
   useEffect(() => {
-    if (submitStatus !== "idle") {
-      const timer = setTimeout(() => {
-        setSubmitStatus("idle");
-        setSubmitMessage("");
-      }, 8000);
-      return () => clearTimeout(timer);
+    if (submitStatus === "idle") {
+      return;
     }
+
+    const timer = setTimeout(() => {
+      setSubmitStatus("idle");
+      setSubmitMessage("");
+    }, 8000);
+
+    return () => clearTimeout(timer);
   }, [submitStatus]);
 
   const onSubmit = async (data: ContactFormData) => {
