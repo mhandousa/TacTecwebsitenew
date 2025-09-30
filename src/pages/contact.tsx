@@ -22,7 +22,9 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
   const [submitMessage, setSubmitMessage] = useState("");
 
   const {
@@ -72,7 +74,7 @@ export default function ContactPage() {
       if (response.ok && result.success) {
         setSubmitStatus("success");
         setSubmitMessage(
-          result.message || "Your message has been sent successfully!"
+          result.message || "Your message has been sent successfully!",
         );
         reset();
 
@@ -101,7 +103,7 @@ export default function ContactPage() {
       setSubmitMessage(
         error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again or email us directly."
+          : "Something went wrong. Please try again or email us directly.",
       );
 
       trackEvent("form_submit_error", {
@@ -157,7 +159,11 @@ export default function ContactPage() {
       </nav>
 
       {/* Page Content */}
-      <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+      <main
+        id="content"
+        tabIndex={-1}
+        className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
+      >
         <div className="container mx-auto px-6 py-16">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
@@ -166,7 +172,8 @@ export default function ContactPage() {
                 Get in Touch
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-400">
-                Ready to transform your club? Request a demo or contact our team.
+                Ready to transform your club? Request a demo or contact our
+                team.
               </p>
             </div>
 
@@ -202,7 +209,9 @@ export default function ContactPage() {
                     <option value="general">General Question</option>
                   </select>
                   {errors.requestType && (
-                    <p className="mt-1 text-sm text-red-600">{errors.requestType.message}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.requestType.message}
+                    </p>
                   )}
                 </div>
 
@@ -218,7 +227,9 @@ export default function ContactPage() {
                     placeholder="John Doe"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.name.message}
+                    </p>
                   )}
                 </div>
 
@@ -234,7 +245,9 @@ export default function ContactPage() {
                     placeholder="john@club.com"
                   />
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.email.message}
+                    </p>
                   )}
                 </div>
 
@@ -250,7 +263,9 @@ export default function ContactPage() {
                     placeholder="FC Example"
                   />
                   {errors.club && (
-                    <p className="mt-1 text-sm text-red-600">{errors.club.message}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.club.message}
+                    </p>
                   )}
                 </div>
 
@@ -266,7 +281,9 @@ export default function ContactPage() {
                     placeholder="Manager, Coach, Director, etc."
                   />
                   {errors.role && (
-                    <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.role.message}
+                    </p>
                   )}
                 </div>
 
@@ -282,7 +299,9 @@ export default function ContactPage() {
                     placeholder="Tell us about your needs..."
                   />
                   {errors.message && (
-                    <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.message.message}
+                    </p>
                   )}
                 </div>
 
@@ -294,9 +313,24 @@ export default function ContactPage() {
                 >
                   {isSubmitting ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
                       </svg>
                       Sending...
                     </>
@@ -311,34 +345,71 @@ export default function ContactPage() {
             <div className="mt-12 grid md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    className="w-6 h-6 text-sky-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                 </div>
                 <h3 className="font-semibold mb-2">Email</h3>
-                <a href="mailto:info@tactec.club" className="text-sky-600 hover:underline">
+                <a
+                  href="mailto:info@tactec.club"
+                  className="text-sky-600 hover:underline"
+                >
                   info@tactec.club
                 </a>
               </div>
 
               <div className="text-center">
                 <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-6 h-6 text-sky-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
                 <h3 className="font-semibold mb-2">Response Time</h3>
-                <p className="text-gray-600 dark:text-gray-400">Within 24 hours</p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Within 24 hours
+                </p>
               </div>
 
               <div className="text-center">
                 <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                  <svg
+                    className="w-6 h-6 text-sky-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                    />
                   </svg>
                 </div>
                 <h3 className="font-semibold mb-2">Languages</h3>
-                <p className="text-gray-600 dark:text-gray-400">8 languages supported</p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  8 languages supported
+                </p>
               </div>
             </div>
           </div>
@@ -349,7 +420,9 @@ export default function ContactPage() {
       <footer className="bg-gray-900 text-gray-400 py-8">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">© Ventio. All rights reserved.</p>
-          <p className="mt-2 text-sky-400 text-sm">Made with care for football.</p>
+          <p className="mt-2 text-sky-400 text-sm">
+            Made with care for football.
+          </p>
         </div>
       </footer>
     </>
@@ -360,8 +433,18 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const fs = await import("fs");
   const path = await import("path");
 
-  const filePath = path.join(process.cwd(), "src/locales", locale || "en", "common.json");
-  const fallbackPath = path.join(process.cwd(), "src/locales", "en", "common.json");
+  const filePath = path.join(
+    process.cwd(),
+    "src/locales",
+    locale || "en",
+    "common.json",
+  );
+  const fallbackPath = path.join(
+    process.cwd(),
+    "src/locales",
+    "en",
+    "common.json",
+  );
   let messages = {};
 
   try {
