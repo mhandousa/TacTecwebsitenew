@@ -102,4 +102,4 @@ const sendToErrorEndpoint = async (errorReport: ErrorReport): Promise<void> => {
   }
 };
 
-export type { ErrorContext as ErrorReportingContext, ErrorReport };
+export type { ErrorContext as ErrorReportingContext };

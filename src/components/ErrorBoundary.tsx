@@ -38,7 +38,7 @@ export class ErrorBoundary extends Component<Props, State> {
       severity: ErrorSeverity.Fatal,
       context: {
         component: 'ErrorBoundary',
-        componentStack: errorInfo.componentStack,
+        componentStack: errorInfo.componentStack || undefined,
         errorBoundary: true,
       },
     });

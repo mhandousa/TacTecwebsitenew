@@ -2,7 +2,6 @@ import { useTranslations } from 'next-intl';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import LanguageSwitcher from './LanguageSwitcher';
 import StructuredData from './StructuredData';
 import { SITE_URL } from '@/config/env';
@@ -10,7 +9,6 @@ import { trackEvent } from '@/utils/analytics';
 
 export default function TacTecLanding() {
   const t = useTranslations();
-  const router = useRouter();
 
   const handleCTAClick = (type: string) => {
     trackEvent('cta_click', { type });
@@ -72,12 +70,12 @@ export default function TacTecLanding() {
               >
                 {t('hero.cta.demo')}
               </Link>
-              
+              <Link
                 href="#features"
                 className="border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-8 py-3 rounded-lg font-semibold transition"
               >
                 {t('hero.cta.start')}
-              </a>
+              </Link>
             </div>
           </div>
 
