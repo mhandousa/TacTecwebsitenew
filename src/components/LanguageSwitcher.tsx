@@ -15,6 +15,8 @@ const locales = [
 ];
 
 export default function LanguageSwitcher() {
+  // Note: `asPath` is intentionally not destructured because the localized
+  // links are generated from the pathname/query combination.
   const { locale, pathname, query } = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
