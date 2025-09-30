@@ -103,17 +103,17 @@ export default function TacTecLanding() {
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="flex items-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+              className="flex items-center text-sky-600 transition hover:text-sky-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
               aria-label="TACTEC homepage"
             >
               <span className="sr-only">TACTEC</span>
               <Image
-                src="/icons/icon1.png"
+                src="/icons/icon0.svg"
                 alt="TACTEC logo"
-                width={96}
-                height={96}
+                width={294}
+                height={281}
                 priority
-                className="h-10 w-10"
+                className="h-10 w-auto"
               />
             </Link>
             <div className="flex items-center gap-4">
