@@ -15,7 +15,7 @@ const locales = [
 ];
 
 export default function LanguageSwitcher() {
-  const { locale, pathname, asPath, query } = useRouter();
+  const { locale, pathname, query } = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 

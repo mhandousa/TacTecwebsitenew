@@ -12,18 +12,18 @@
   "categories": ["sports", "business", "productivity"],
   "screenshots": [
     {
-      "src": "/images/screenshot-mobile.webp",
-      "sizes": "390x844",
+      "src": "/images/1000286398.webp",
+      "sizes": "301x653",
       "type": "image/webp",
       "form_factor": "narrow",
-      "label": "TACTEC Mobile Experience"
+      "label": "TACTEC Mobile Interface"
     },
     {
-      "src": "/images/screenshot-desktop.webp", 
+      "src": "/images/Client_Offering_Catalog1.webp",
       "sizes": "1920x1080",
       "type": "image/webp",
       "form_factor": "wide",
-      "label": "TACTEC Desktop Experience"
+      "label": "TACTEC Platform Overview"
     }
   ],
   "icons": [
