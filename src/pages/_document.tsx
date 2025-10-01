@@ -1,10 +1,67 @@
 import Document, { Html, Head, Main, NextScript, DocumentContext } from "next/document";
+import { SITE_URL } from "@/config/env";
+
+const trimTrailingSlashes = (value: string) => value.replace(/\/+$/, "");
+
+const createAssetUrlBuilder = (siteUrl: string) => {
+  const normalizedBase = trimTrailingSlashes(siteUrl.trim());
+
+  return (path: string) => {
+    if (!path) {
+      return normalizedBase;
+    }
+
+    if (/^https?:\/\//i.test(path)) {
+      return path;
+    }
+
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+    return normalizedBase ? `${normalizedBase}${normalizedPath}` : normalizedPath;
+  };
+};
 
 type Props = { locale: string };
 
 export default function MyDocument({ locale }: Props) {
   const dir = locale === "ar" ? "rtl" : "ltr";
-  
+  const buildAssetUrl = createAssetUrlBuilder(SITE_URL || "");
+  const baseUrl = buildAssetUrl("");
+
+  const ogUrl = buildAssetUrl("/");
+  const ogImageUrl = buildAssetUrl("/images/1_TacTec-Revolutionising-Football-Club-Management.webp");
+  const twitterImageUrl = ogImageUrl;
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Ventio",
+    url: "https://ventio.com",
+    logo: buildAssetUrl("/icons/icon-512x512.png"),
+    description: "TACTEC by Ventio - Professional football club management platform",
+    sameAs: ["https://twitter.com/ventio", "https://linkedin.com/company/ventio"],
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: "info@tactec.club",
+      contactType: "customer service",
+    },
+  };
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "TACTEC",
+    url: baseUrl || undefined,
+    description: "Professional football club management platform",
+    publisher: {
+      "@type": "Organization",
+      name: "Ventio",
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: buildAssetUrl("/search?q={search_term_string}"),
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <Html lang={locale || "en"} dir={dir}>
       <Head>
@@ -56,8 +113,11 @@ export default function MyDocument({ locale }: Props) {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="TACTEC – Revolutionising Football Club Management" />
         <meta property="og:description" content="Unifying tactical, medical, and operational workflows into one professional platform for football clubs." />
-        <meta property="og:url" content="https://tactec.club/" />
-        <meta property="og:image" content="https://tactec.club/images/1_TacTec-Revolutionising-Football-Club-Management.webp" />
+        <meta property="og:url" content={ogUrl} />
+        <meta
+          property="og:image"
+          content={ogImageUrl}
+        />
         <meta property="og:image:alt" content="TACTEC - Professional football club management platform" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -69,7 +129,7 @@ export default function MyDocument({ locale }: Props) {
         <meta name="twitter:creator" content="@ventio" />
         <meta name="twitter:title" content="TACTEC – Revolutionising Football Club Management" />
         <meta name="twitter:description" content="Unifying tactical, medical, and operational workflows into one professional platform for football clubs." />
-        <meta name="twitter:image" content="https://tactec.club/images/1_TacTec-Revolutionising-Football-Club-Management.webp" />
+        <meta name="twitter:image" content={twitterImageUrl} />
         <meta name="twitter:image:alt" content="TACTEC - Professional football club management platform" />
         
         {/* Additional SEO Tags */}
@@ -81,46 +141,15 @@ export default function MyDocument({ locale }: Props) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Ventio",
-              "url": "https://ventio.com",
-              "logo": "https://tactec.club/icons/icon-512x512.png",
-              "description": "TACTEC by Ventio - Professional football club management platform",
-              "sameAs": [
-                "https://twitter.com/ventio",
-                "https://linkedin.com/company/ventio"
-              ],
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "email": "info@tactec.club",
-                "contactType": "customer service"
-              }
-            })
+            __html: JSON.stringify(organizationJsonLd)
           }}
         />
-        
+
         {/* Structured Data - Website */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "TACTEC",
-              "url": "https://tactec.club",
-              "description": "Professional football club management platform",
-              "publisher": {
-                "@type": "Organization",
-                "name": "Ventio"
-              },
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://tactec.club/search?q={search_term_string}",
-                "query-input": "required name=search_term_string"
-              }
-            })
+            __html: JSON.stringify(websiteJsonLd)
           }}
         />
       </Head>
