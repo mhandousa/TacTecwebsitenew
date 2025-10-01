@@ -1,72 +1,112 @@
-# Robots.txt for TACTEC Website
-# https://tactec.club/robots.txt
-
-# Allow all web crawlers
+# *
 User-agent: *
 Allow: /
-
-# Disallow specific paths
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
 Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*.txt$
 
-# Block AI training crawlers
+# GPTBot
 User-agent: GPTBot
 Disallow: /
 
+# ChatGPT-User
 User-agent: ChatGPT-User
 Disallow: /
 
+# CCBot
 User-agent: CCBot
 Disallow: /
 
+# anthropic-ai
 User-agent: anthropic-ai
 Disallow: /
 
+# Claude-Web
 User-agent: Claude-Web
 Disallow: /
 
+# PerplexityBot
 User-agent: PerplexityBot
 Disallow: /
 
+# YouBot
 User-agent: YouBot
 Disallow: /
 
+# Google-Extended
 User-agent: Google-Extended
 Disallow: /
 
-# Allow specific search engines
+# Googlebot
 User-agent: Googlebot
 Allow: /
 Crawl-delay: 1
 
+# Bingbot
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 1
 
+# Slurp
 User-agent: Slurp
 Allow: /
 Crawl-delay: 2
 
+# DuckDuckBot
 User-agent: DuckDuckBot
 Allow: /
 Crawl-delay: 1
 
+# facebookexternalhit
 User-agent: facebookexternalhit
 Allow: /
 
+# Twitterbot
 User-agent: Twitterbot
 Allow: /
 
+# LinkedInBot
 User-agent: LinkedInBot
 Allow: /
 
+# WhatsApp
 User-agent: WhatsApp
 Allow: /
 
-# Sitemap location
-Sitemap: https://tactec.club/sitemap.xml
+# Host
+Host: http://localhost:3000
 
-# Additional sitemap for localized content
-Sitemap: https://tactec.club/sitemap-0.xml
+# Sitemaps
+Sitemap: http://localhost:3000/sitemap.xml
+
+# Additional crawlers
+User-agent: Applebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 2
+
+# Block unwanted bots
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Host directive (optional, helps with internationalization)
+Host: http://localhost:3000
+
+# Crawl-delay for all other bots
+User-agent: *
+Crawl-delay: 1

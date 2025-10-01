@@ -30,6 +30,7 @@ const buildAlternateRefs = (siteUrl, path = '/') => {
 };
 
 const siteUrl = trimTrailingSlash(rawSiteUrl);
+const siteOrigin = new URL(siteUrl).origin;
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
@@ -246,7 +247,7 @@ User-agent: DotBot
 Disallow: /
 
 # Host directive (optional, helps with internationalization)
-Host: https://tactec.club
+Host: ${siteOrigin}
 
 # Crawl-delay for all other bots
 User-agent: *
