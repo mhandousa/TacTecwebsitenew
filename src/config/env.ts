@@ -11,17 +11,51 @@ interface EnvConfig {
   NODE_ENV: 'development' | 'production' | 'test';
   SENTRY_DSN: string;
   ERROR_ENDPOINT: string;
+  CONTACT_CORS_ORIGINS: string[];
 }
 
 /**
  * Validates that required environment variables are present
  */
+const normalizeUrl = (value?: string | null): string => {
+  if (!value) return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  return trimmed.startsWith('http://') || trimmed.startsWith('https://')
+    ? trimmed
+    : `https://${trimmed}`;
+};
+
+function resolveSiteUrl(nodeEnv: EnvConfig['NODE_ENV']): string {
+  const explicitSiteUrl = normalizeUrl(process.env.NEXT_PUBLIC_SITE_URL);
+  if (explicitSiteUrl) {
+    return explicitSiteUrl;
+  }
+
+  const vercelUrl = normalizeUrl(process.env.VERCEL_URL);
+  if (vercelUrl) {
+    return vercelUrl;
+  }
+
+  const platformUrl = normalizeUrl(process.env.URL);
+  if (platformUrl) {
+    return platformUrl;
+  }
+
+  if (nodeEnv !== 'production') {
+    return 'http://localhost:3000';
+  }
+
+  return '';
+}
+
 function validateEnv(): EnvConfig {
   const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || '';
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '';
   const NODE_ENV = (process.env.NODE_ENV || 'development') as 'development' | 'production' | 'test';
+  const SITE_URL = resolveSiteUrl(NODE_ENV);
   const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN || '';
   const ERROR_ENDPOINT = process.env.NEXT_PUBLIC_ERROR_ENDPOINT || '';
+  const CONTACT_CORS_ORIGINS_RAW = process.env.CONTACT_CORS_ORIGINS || '';
 
   // Validation for production environment
   if (NODE_ENV === 'production') {
@@ -34,9 +68,13 @@ function validateEnv(): EnvConfig {
     }
     
     if (!SITE_URL) {
-      errors.push('NEXT_PUBLIC_SITE_URL is required in production!');
+      errors.push('A canonical site URL could not be determined. Set NEXT_PUBLIC_SITE_URL or VERCEL_URL.');
     } else if (!SITE_URL.match(/^https?:\/\/.+/)) {
       errors.push(`SITE_URL has invalid format: ${SITE_URL}`);
+    }
+
+    if (!CONTACT_CORS_ORIGINS_RAW) {
+      errors.push('CONTACT_CORS_ORIGINS is required in production!');
     }
 
     if (!SENTRY_DSN && !ERROR_ENDPOINT) {
@@ -50,12 +88,58 @@ function validateEnv(): EnvConfig {
     }
   }
 
+  const resolvedSiteUrl = SITE_URL;
+
+  let resolvedSiteOrigin: string | null = null;
+  if (resolvedSiteUrl) {
+    try {
+      resolvedSiteOrigin = new URL(resolvedSiteUrl).origin;
+    } catch {
+      console.warn(`⚠️  SITE_URL is not a valid URL: ${resolvedSiteUrl}`);
+    }
+  }
+
+  const invalidCorsOrigins: string[] = [];
+  const configuredCorsOrigins = CONTACT_CORS_ORIGINS_RAW
+    .split(',')
+    .map(value => value.trim())
+    .filter(Boolean)
+    .reduce<string[]>((acc, origin) => {
+      try {
+        const parsed = new URL(origin);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+          throw new Error('Invalid protocol');
+        }
+        acc.push(parsed.origin);
+      } catch {
+        invalidCorsOrigins.push(origin);
+      }
+      return acc;
+    }, []);
+
+  if (invalidCorsOrigins.length > 0) {
+    console.warn(
+      `⚠️  The following CONTACT_CORS_ORIGINS entries are invalid and will be ignored: ${invalidCorsOrigins.join(', ')}`,
+    );
+  }
+
+  const corsOrigins = new Set<string>(configuredCorsOrigins);
+
+  if (resolvedSiteOrigin) {
+    corsOrigins.add(resolvedSiteOrigin);
+  }
+
+  if (NODE_ENV === 'development') {
+    corsOrigins.add('http://localhost:3000');
+  }
+
   return {
     GA_TRACKING_ID,
-    SITE_URL: SITE_URL || 'http://localhost:3000',
+    SITE_URL: resolvedSiteUrl || '',
     NODE_ENV,
     SENTRY_DSN,
     ERROR_ENDPOINT,
+    CONTACT_CORS_ORIGINS: Array.from(corsOrigins),
   };
 }
 
@@ -63,12 +147,13 @@ function validateEnv(): EnvConfig {
 export const env = validateEnv();
 
 // Export individual variables for convenience
-export const { 
-  GA_TRACKING_ID, 
-  SITE_URL, 
+export const {
+  GA_TRACKING_ID,
+  SITE_URL,
   NODE_ENV,
   SENTRY_DSN,
   ERROR_ENDPOINT,
+  CONTACT_CORS_ORIGINS,
 } = env;
 
 // Helper functions
@@ -85,5 +170,6 @@ if (isDev) {
     SITE_URL,
     GA_ENABLED: !!GA_TRACKING_ID,
     ERROR_REPORTING: isErrorReportingEnabled,
+    CONTACT_CORS_ORIGINS: env.CONTACT_CORS_ORIGINS,
   });
 }

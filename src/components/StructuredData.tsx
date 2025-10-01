@@ -37,11 +37,6 @@ export default function StructuredData({ type = 'softwareApplication' }: Structu
         "name": "Ventio",
         "url": "https://ventio.com"
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "50"
-      },
       "featureList": [
         "Team Management",
         "Tactical Boards",

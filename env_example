@@ -13,11 +13,19 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 # Site Configuration
 # --------------------------------------------
 # Site URL (used for canonical URLs and OG tags)
-# Production URL
+# Production URL (falls back to https://<VERCEL_URL> when deployed on Vercel)
 NEXT_PUBLIC_SITE_URL=https://tactec.club
 
 # Development - uncomment for local development
 # NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# Contact form CORS allow list (comma-separated origins)
+# Include every domain that should be able to submit the contact form
+# Example: CONTACT_CORS_ORIGINS=https://tactec.club,https://app.tactec.club
+CONTACT_CORS_ORIGINS=https://tactec.club,https://www.tactec.club
+
+# Development - uncomment to allow local frontends to call the API
+# CONTACT_CORS_ORIGINS=http://localhost:3000
 
 # --------------------------------------------
 # Error Reporting (Sentry)
