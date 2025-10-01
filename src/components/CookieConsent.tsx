@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import {
+  COOKIE_CONSENT_ACCEPTED,
+  COOKIE_CONSENT_DECLINED,
+  COOKIE_CONSENT_KEY,
+} from '@/utils/constants';
 
-type ConsentStatus = 'accepted' | 'declined';
+type ConsentStatus = typeof COOKIE_CONSENT_ACCEPTED | typeof COOKIE_CONSENT_DECLINED;
 
 interface CookieConsentProps {
   onConsentChange?: (status: ConsentStatus) => void;
@@ -21,10 +26,10 @@ export default function CookieConsent({ onConsentChange }: CookieConsentProps) {
   useEffect(() => {
     if (!mounted || typeof window === 'undefined') return;
     
-    const consent = localStorage.getItem('cookie-consent');
+    const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!consent) {
       setShowBanner(true);
-    } else if (consent === 'accepted') {
+    } else if (consent === COOKIE_CONSENT_ACCEPTED) {
       enableAnalytics();
     }
   }, [mounted]);
@@ -47,16 +52,16 @@ export default function CookieConsent({ onConsentChange }: CookieConsentProps) {
   const handleAccept = () => {
     if (typeof window === 'undefined') return;
 
-    localStorage.setItem('cookie-consent', 'accepted');
+    localStorage.setItem(COOKIE_CONSENT_KEY, COOKIE_CONSENT_ACCEPTED);
     enableAnalytics();
     setShowBanner(false);
-    notifyConsentChange('accepted');
+    notifyConsentChange(COOKIE_CONSENT_ACCEPTED);
   };
 
   const handleDecline = () => {
     if (typeof window === 'undefined') return;
 
-    localStorage.setItem('cookie-consent', 'declined');
+    localStorage.setItem(COOKIE_CONSENT_KEY, COOKIE_CONSENT_DECLINED);
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('consent', 'update', {
         analytics_storage: 'denied',
@@ -64,7 +69,7 @@ export default function CookieConsent({ onConsentChange }: CookieConsentProps) {
       });
     }
     setShowBanner(false);
-    notifyConsentChange('declined');
+    notifyConsentChange(COOKIE_CONSENT_DECLINED);
   };
 
   // Don't render until mounted

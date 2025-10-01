@@ -1,3 +1,12 @@
+const nodeEnv = process.env.NODE_ENV || 'development';
+const isDev = nodeEnv === 'development';
+const resolvedSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || (isDev ? 'http://localhost:3000' : undefined);
+
+if (!resolvedSiteUrl) {
+  throw new Error('NEXT_PUBLIC_SITE_URL must be defined for this environment');
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Enable React strict mode
@@ -16,7 +25,6 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
-    dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
@@ -98,7 +106,7 @@ const nextConfig = {
 
   // Environment variables
   env: {
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://tactec.club',
+    NEXT_PUBLIC_SITE_URL: resolvedSiteUrl,
   },
 
   // Output configuration

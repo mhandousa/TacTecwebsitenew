@@ -9,6 +9,10 @@ import { useTranslations } from "next-intl";
 import { SITE_URL } from "@/config/env";
 import { trackEvent } from "@/utils/analytics";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import {
+  MESSAGE_DISPLAY_DURATION_MS,
+  SCROLL_DELAY_MS,
+} from "@/utils/constants";
 
 const buildContactFormSchema = (translate: (key: string) => string) =>
   z.object({
@@ -50,7 +54,7 @@ export default function ContactPage() {
       const timer = setTimeout(() => {
         setSubmitStatus("idle");
         setSubmitMessage("");
-      }, 8000);
+      }, MESSAGE_DISPLAY_DURATION_MS);
       return () => clearTimeout(timer);
     }
     return undefined;
@@ -75,9 +79,45 @@ export default function ContactPage() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get("content-type") ?? "";
+      type ContactApiResponse = {
+        success?: boolean;
+        message?: string;
+        error?: string;
+        rateLimit?: {
+          remaining?: number;
+          reset?: number;
+        };
+      };
 
-      if (response.ok && result.success) {
+      let result: ContactApiResponse | null = null;
+
+      if (contentType.includes("application/json")) {
+        try {
+          const parsed = (await response.json()) as unknown;
+          if (parsed && typeof parsed === "object") {
+            result = parsed as ContactApiResponse;
+          } else {
+            console.warn("Unexpected JSON contact response shape", parsed);
+          }
+        } catch (parseError) {
+          console.warn(
+            "Unable to parse JSON response from contact endpoint",
+            parseError,
+          );
+        }
+      } else {
+        try {
+          const body = (await response.text()).trim();
+          if (body) {
+            console.warn("Received non-JSON contact response", body.slice(0, 200));
+          }
+        } catch (readError) {
+          console.warn("Unable to read non-JSON contact response", readError);
+        }
+      }
+
+      if (response.ok && result && result.success) {
         const apiMessage =
           typeof result.message === "string" ? result.message.trim() : "";
         const successMessage =
@@ -94,17 +134,19 @@ export default function ContactPage() {
           request_type: data.requestType,
         });
 
-        trackEvent("demo_request", {
-          request_type: data.requestType,
-          club: data.club,
-        });
+        if (data.requestType === "demo") {
+          trackEvent("demo_request", {
+            request_type: data.requestType,
+            club: data.club,
+          });
+        }
 
         setTimeout(() => {
           document.getElementById("form-status")?.scrollIntoView({
             behavior: "smooth",
             block: "center",
           });
-        }, 100);
+        }, SCROLL_DELAY_MS);
       } else {
         const apiError =
           result && typeof result.error === "string"

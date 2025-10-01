@@ -1,7 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
+import { CONTACT_CORS_ORIGINS } from '@/config/env';
 import { ratelimit } from '@/lib/ratelimit';
 import { isIP } from 'net';
+
+const allowedOrigins = new Set(CONTACT_CORS_ORIGINS);
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -91,15 +94,9 @@ export default async function handler(
   res: NextApiResponse<ApiResponse>
 ) {
   // CORS Configuration
-  const allowedOrigins = [
-    'https://tactec.club',
-    'https://www.tactec.club',
-    ...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000'] : [])
-  ];
-
   const origin = req.headers.origin;
-  
-  if (origin && allowedOrigins.includes(origin)) {
+
+  if (origin && allowedOrigins.has(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
 
@@ -156,26 +153,25 @@ export default async function handler(
     // 3. Add to CRM
     
     // For now, just return success
-    res.status(200).json({ 
-      success: true, 
+    return res.status(200).json({
+      success: true,
       message: 'Your message has been sent successfully. We will contact you within 24 hours.',
       rateLimit: {
         remaining: rateLimitResult.remaining,
         reset: rateLimitResult.reset,
       }
     });
-
   } catch (error) {
     console.error('❌ Contact form error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return res.status(400).json({ 
         error: 'Please check your form data: ' + error.errors.map(e => e.message).join(', ')
       });
     }
 
-    res.status(500).json({ 
-      error: 'We encountered a technical issue. Please try again or email us directly at info@tactec.club' 
+    return res.status(500).json({
+      error: 'We encountered a technical issue. Please try again or email us directly at info@tactec.club'
     });
   }
 }
