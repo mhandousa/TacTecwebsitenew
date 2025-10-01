@@ -1,6 +1,39 @@
+const nodeEnv = process.env.NODE_ENV || 'development';
+const isDev = nodeEnv === 'development';
+const rawSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || (isDev ? 'http://localhost:3000' : undefined);
+
+if (!rawSiteUrl) {
+  throw new Error('NEXT_PUBLIC_SITE_URL must be defined to generate the sitemap');
+}
+
+const locales = ['en', 'ar', 'pt', 'pt-BR', 'es', 'fr', 'it', 'de'];
+
+const trimTrailingSlash = (value) => value.replace(/\/+$/, '');
+const ensureLeadingSlash = (value) => (value.startsWith('/') ? value : `/${value}`);
+
+const buildAlternateRefs = (siteUrl, path = '/') => {
+  const trimmedSiteUrl = trimTrailingSlash(siteUrl);
+  const normalizedPath = path === '/' ? '/' : ensureLeadingSlash(path);
+
+  const refs = locales.map(locale => ({
+    href: `${trimmedSiteUrl}${locale === 'en' ? '' : `/${locale}`}${normalizedPath}`,
+    hreflang: locale,
+  }));
+
+  refs.push({
+    href: `${trimmedSiteUrl}${normalizedPath}`,
+    hreflang: 'x-default',
+  });
+
+  return refs;
+};
+
+const siteUrl = trimTrailingSlash(rawSiteUrl);
+
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://tactec.club',
+  siteUrl,
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   
@@ -28,53 +61,14 @@ module.exports = {
   autoLastmod: true,
   
   // Internationalization - All supported locales
-  alternateRefs: [
-    {
-      href: 'https://tactec.club/',
-      hreflang: 'en',
-    },
-    {
-      href: 'https://tactec.club/ar/',
-      hreflang: 'ar',
-    },
-    {
-      href: 'https://tactec.club/pt/',
-      hreflang: 'pt',
-    },
-    {
-      href: 'https://tactec.club/pt-BR/',
-      hreflang: 'pt-BR',
-    },
-    {
-      href: 'https://tactec.club/es/',
-      hreflang: 'es',
-    },
-    {
-      href: 'https://tactec.club/fr/',
-      hreflang: 'fr',
-    },
-    {
-      href: 'https://tactec.club/it/',
-      hreflang: 'it',
-    },
-    {
-      href: 'https://tactec.club/de/',
-      hreflang: 'de',
-    },
-    {
-      href: 'https://tactec.club/',
-      hreflang: 'x-default',
-    }
-  ],
+  alternateRefs: buildAlternateRefs(siteUrl),
 
   // Transform function to handle multilingual URLs
   transform: async (config, path) => {
-    const locales = ['en', 'ar', 'pt', 'pt-BR', 'es', 'fr', 'it', 'de'];
-    
     // Set priority based on page importance
     let priority = 0.8;
     let changefreq = 'weekly';
-    
+
     if (path === '/') {
       priority = 1.0;
       changefreq = 'weekly';
@@ -87,16 +81,7 @@ module.exports = {
     }
 
     // Create alternate refs for this specific path
-    const alternateRefs = locales.map(locale => ({
-      href: `${config.siteUrl}${locale === 'en' ? path : `/${locale}${path}`}`,
-      hreflang: locale,
-    }));
-    
-    // Add x-default alternate ref
-    alternateRefs.push({
-      href: `${config.siteUrl}${path}`,
-      hreflang: 'x-default',
-    });
+    const alternateRefs = buildAlternateRefs(config.siteUrl, path);
 
     return {
       loc: path,
@@ -122,25 +107,15 @@ module.exports = {
       }
     ];
 
-    const locales = ['en', 'ar', 'pt', 'pt-BR', 'es', 'fr', 'it', 'de'];
     const paths = [];
 
     // Generate paths for each locale
     staticPaths.forEach(({ path, priority, changefreq }) => {
       locales.forEach(locale => {
         const localePath = locale === 'en' ? path : `/${locale}${path}`;
-        
+
         // Create alternate refs for this path
-        const alternateRefs = locales.map(l => ({
-          href: `${config.siteUrl}${l === 'en' ? path : `/${l}${path}`}`,
-          hreflang: l,
-        }));
-        
-        // Add x-default
-        alternateRefs.push({
-          href: `${config.siteUrl}${path}`,
-          hreflang: 'x-default',
-        });
+        const alternateRefs = buildAlternateRefs(config.siteUrl, path);
 
         paths.push({
           loc: localePath,

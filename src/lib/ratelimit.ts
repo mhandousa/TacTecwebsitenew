@@ -122,13 +122,21 @@ const baseOptions: RateLimitOptions = {
 
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+const isProduction = process.env.NODE_ENV === 'production';
 
 const memoryLimiter = new MemoryRateLimiter(baseOptions);
 const persistentLimiter = redisUrl && redisToken ? new UpstashHttpRateLimiter({ ...baseOptions, baseUrl: redisUrl, token: redisToken }) : null;
 
-if (!persistentLimiter && process.env.NODE_ENV !== 'production') {
+if (!persistentLimiter) {
+  const message =
+    'Upstash credentials are required for durable rate limiting. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to prevent in-memory fallback.';
+
+  if (isProduction) {
+    throw new Error(message);
+  }
+
   console.warn(
-    'Using in-memory rate limiter because UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN are not set. Configure these variables to enable durable rate limiting.',
+    `${message} Using the in-memory fallback because the credentials are missing in this environment.`,
   );
 }
 
