@@ -1,14 +1,14 @@
 import Document, { Html, Head, Main, NextScript, DocumentContext } from "next/document";
 import { SITE_URL } from "@/config/env";
 
-const trimTrailingSlashes = (value: string) => value.replace(/\/+$/, "");
+type Props = { locale: string };
 
-const createAssetUrlBuilder = (siteUrl: string) => {
-  const normalizedBase = trimTrailingSlashes(siteUrl.trim());
-
-  return (path: string) => {
+export default function MyDocument({ locale }: Props) {
+  const dir = locale === "ar" ? "rtl" : "ltr";
+  const normalizedSiteUrl = (SITE_URL || "").trim().replace(/\/+$/, "");
+  const buildAssetUrl = (path: string) => {
     if (!path) {
-      return normalizedBase;
+      return normalizedSiteUrl;
     }
 
     if (/^https?:\/\//i.test(path)) {
@@ -17,15 +17,8 @@ const createAssetUrlBuilder = (siteUrl: string) => {
 
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
-    return normalizedBase ? `${normalizedBase}${normalizedPath}` : normalizedPath;
+    return normalizedSiteUrl ? `${normalizedSiteUrl}${normalizedPath}` : normalizedPath;
   };
-};
-
-type Props = { locale: string };
-
-export default function MyDocument({ locale }: Props) {
-  const dir = locale === "ar" ? "rtl" : "ltr";
-  const buildAssetUrl = createAssetUrlBuilder(SITE_URL || "");
   const baseUrl = buildAssetUrl("");
 
   const ogUrl = buildAssetUrl("/");
